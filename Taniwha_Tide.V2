@@ -84,7 +84,17 @@ def check_ring_trigger():
 def main():
     global current_scene
 
-    while True:
+if current_scene == "menu":
+    draw_menu()
+elif current_scene == "level1":
+    keys = pygame.key.get_pressed()
+    handle_movement(keys)
+    check_ring_trigger()
+    draw_level_one()
+
+pygame.display.flip()
+
+while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -102,7 +112,7 @@ def main():
             check_ring_trigger()
             draw_level_one()
 
-pygame.display.flip()
-clock.tick(FPS)
+        pygame.display.flip()
+        clock.tick(FPS)
 
-main()
+        main()
