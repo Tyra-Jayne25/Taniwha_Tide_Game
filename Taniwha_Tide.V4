@@ -181,16 +181,16 @@ def check_obstacle_collision():
 # --- Main Loop ---
 def main():
     global current_scene, user_input, answer_feedback, math_question_active, boost_active, boost_timer
-    while True:
+    running = True
+    while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if current_scene == "menu" and start_button.collidepoint(event.pos):
                     current_scene = "level1"
             elif event.type == pygame.KEYDOWN and current_scene == "level1" and math_question_active:
-                global lives  # Added to fix UnboundLocalError
+                global lives
                 if event.key == pygame.K_RETURN:
                     if user_input == current_question["answer"]:
                         answer_feedback = "Correct!"
@@ -206,10 +206,10 @@ def main():
                 elif event.unicode.isdigit() or event.unicode in ["/", ".", "-"]:
                     user_input += event.unicode
 
-keys = pygame.key.get_pressed()
-if current_scene == "menu":
+        keys = pygame.key.get_pressed()
+        if current_scene == "menu":
             draw_menu()
-elif current_scene == "level1":
+        elif current_scene == "level1":
             if game_over:
                 draw_game_over()
             else:
@@ -217,9 +217,9 @@ elif current_scene == "level1":
                 check_ring_triggers()
                 check_obstacle_collision()
                 draw_level_one()
-                draw_health()
-                
-pygame.display.flip()
-clock.tick(FPS)
 
-main()
+        pygame.display.flip()
+        clock.tick(FPS)
+
+    pygame.quit()
+    
