@@ -1,0 +1,72 @@
+import pygame
+import sys
+
+# Initialize game
+pygame.init()
+screen = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Taniwha Tide")
+clock = pygame.time.Clock()
+
+# Game states
+START_MENU = "start_menu"
+LEVEL_1 = "level_1"
+game_state = START_MENU
+
+# Colors
+WHITE = (255, 255, 255)
+BLUE = (0, 100, 200)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+
+# Fonts
+font = pygame.font.SysFont(None, 48)
+
+# Taniwha placeholder
+taniwha = pygame.Rect(100, 300, 50, 50)
+speed = 5
+
+# Math ring
+math_ring = pygame.Rect(350, 250, 100, 100)
+
+# Start button
+start_button = pygame.Rect(300, 250, 200, 60)
+
+def draw_start_menu():
+    screen.fill(BLUE)
+    pygame.draw.rect(screen, GREEN, start_button)
+    text = font.render("Start Game", True, WHITE)
+    screen.blit(text, (start_button.x + 20, start_button.y + 10))
+
+def draw_level_1():
+    screen.fill(WHITE)
+    pygame.draw.rect(screen, BLUE, math_ring)
+    pygame.draw.rect(screen, GREEN, taniwha)
+
+def handle_level_1_keys(keys):
+    if keys[pygame.K_LEFT]: taniwha.x -= speed
+    if keys[pygame.K_RIGHT]: taniwha.x += speed
+    if keys[pygame.K_UP]: taniwha.y -= speed
+    if keys[pygame.K_DOWN]: taniwha.y += speed
+
+def check_math_ring_trigger():
+    if taniwha.colliderect(math_ring):
+        pygame.draw.rect(screen, RED, math_ring, 5)
+
+# Main loop
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: pygame.quit(); sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN and game_state == START_MENU:
+            if start_button.collidepoint(event.pos):
+                game_state = LEVEL_1
+
+    if game_state == START_MENU:
+        draw_start_menu()
+    elif game_state == LEVEL_1:
+        keys = pygame.key.get_pressed()
+        handle_level_1_keys(keys)
+        draw_level_1()
+        check_math_ring_trigger()
+
+    pygame.display.flip()
+    clock.tick(60)
