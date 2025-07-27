@@ -28,14 +28,9 @@ pygame.display.set_caption("Taniwha Tide")
 clock = pygame.time.Clock()
 
 # --- Fonts ---
-try:
-    title_font  = pygame.font.SysFont("Arial", 72, bold=True)
-    button_font = pygame.font.SysFont("Arial", 36)
-    health_font = pygame.font.SysFont("Arial", 28)
-except:
-    title_font  = pygame.font.Font(None, 72)
-    button_font = pygame.font.Font(None, 36)
-    health_font = pygame.font.Font(None, 28)
+title_font  = pygame.font.SysFont("Arial", 72, bold=True)
+button_font = pygame.font.SysFont("Arial", 36)
+health_font = pygame.font.SysFont("Arial", 28)
 
 # --- Button ---
 start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60)
@@ -71,17 +66,17 @@ water_rings = [
 ]
 
 # --- Background ---
-background_image = pygame.image.load("Lvl1_water_background.png").convert()
-background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
+background_image = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+background_image.fill(WATER_BLUE)
 background_width = background_image.get_width()
 
-# --- Obstacles Generation (evenly spaced, no clusters) ---
+# --- Obstacles Generation ---
 obstacles = []
 OB_SIZE = 80
-MIN_DIST_FROM_RING = 200
+MIN_DIST_FROM_RING = 300
+MIN_DIST_FROM_OBSTACLE = 160
 TARGET_COUNT = 10
 
-# define spawn-safe area around taniwha start
 spawn_center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)
 spawn_area   = pygame.Rect(spawn_center[0]-200, spawn_center[1]-200, 400, 400)
 
@@ -89,33 +84,41 @@ segment_w = level_width / TARGET_COUNT
 for i in range(TARGET_COUNT):
     placed = False
     attempts = 0
-    while not placed and attempts < 20:
+    while not placed and attempts < 30:
         x_min = int(i * segment_w)
         x_max = int((i+1) * segment_w - OB_SIZE)
         x = random.randint(max(0, x_min), min(level_width-OB_SIZE, x_max))
         y = random.randint(50, WINDOW_HEIGHT - 50 - OB_SIZE)
         rect = pygame.Rect(x, y, OB_SIZE, OB_SIZE)
-        # avoid spawn area
+
         if rect.colliderect(spawn_area):
             attempts += 1
             continue
-        # avoid rings
+
         too_close = False
         for ring in water_rings:
-            rc = ring["rect"].center
-            dx = rect.centerx - rc[0]
-            dy = rect.centery - rc[1]
-            if (dx*dx + dy*dy)**0.5 < MIN_DIST_FROM_RING:
+            dx = rect.centerx - ring["rect"].centerx
+            dy = rect.centery - ring["rect"].centery
+            dist = (dx**2 + dy**2)**0.5
+            if dist < MIN_DIST_FROM_RING:
                 too_close = True
                 break
         if too_close:
             attempts += 1
             continue
-        # avoid other obstacles
-        overlap = any(rect.colliderect(o_rect.inflate(OB_SIZE, OB_SIZE)) for _, o_rect in obstacles)
+
+        overlap = False
+        for _, o_rect in obstacles:
+            dx = rect.centerx - o_rect.centerx
+            dy = rect.centery - o_rect.centery
+            dist = (dx**2 + dy**2)**0.5
+            if dist < MIN_DIST_FROM_OBSTACLE:
+                overlap = True
+                break
         if overlap:
             attempts += 1
             continue
+
         kind = random.choice(["net", "jelly"])
         obstacles.append((kind, rect))
         placed = True
@@ -174,7 +177,7 @@ def draw_level_one():
         r = rect.move(-camera_x, 0)
         clr = BROWN if kind=="net" else PINK
         pygame.draw.rect(screen, clr, r)
-    screen.blit(taniwha_sprite, taniwha_rect)
+    screen.blit(taniwha_sprite, taniwha_rect.move(-camera_x, 0))
     draw_health()
     handle_math_and_feedback()
 
@@ -182,15 +185,21 @@ def draw_level_one():
 def handle_movement(keys):
     global camera_x, boost_timer, boost_active
     speed = taniwha_speed + 3 if boost_active else taniwha_speed
-    if keys[pygame.K_LEFT] and taniwha_rect.x > 0:
+
+    if keys[pygame.K_LEFT]:
         taniwha_rect.x -= speed
-    if keys[pygame.K_RIGHT] and taniwha_rect.x < level_width - taniwha_rect.width:
+    if keys[pygame.K_RIGHT]:
         taniwha_rect.x += speed
-    if keys[pygame.K_UP] and taniwha_rect.y > 0:
+    if keys[pygame.K_UP]:
         taniwha_rect.y -= speed
-    if keys[pygame.K_DOWN] and taniwha_rect.y < WINDOW_HEIGHT - taniwha_rect.height:
+    if keys[pygame.K_DOWN]:
         taniwha_rect.y += speed
 
+    # Clamp Taniwha within level bounds
+    taniwha_rect.x = max(0, min(taniwha_rect.x, level_width - taniwha_rect.width))
+    taniwha_rect.y = max(0, min(taniwha_rect.y, WINDOW_HEIGHT - taniwha_rect.height))
+
+    # Camera follows Taniwha
     left_bound  = WINDOW_WIDTH * 0.3
     right_bound = WINDOW_WIDTH * 0.7
     cx = taniwha_rect.centerx - camera_x
@@ -244,12 +253,12 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-            elif event.type == pygame.MOUSEBUTTONDOWN and current_scene=="menu":
+            elif event.type == pygame.MOUSEBUTTONDOWN and current_scene == "menu":
                 if start_button.collidepoint(event.pos):
                     current_scene = "level1"
 
-            elif event.type==pygame.KEYDOWN and current_scene=="level1" and math_question_active:
-                if event.key==pygame.K_RETURN:
+            elif event.type == pygame.KEYDOWN and current_scene == "level1" and math_question_active:
+                if event.key == pygame.K_RETURN:
                     try:
                         ans_frac = Fraction(user_input)
                     except:
@@ -265,21 +274,21 @@ def main():
                     else:
                         answer_feedback = "Incorrect!"
                         lives -= 1
-                        if lives<=0:
+                        if lives <= 0:
                             game_over = True
 
                     feedback_timer = FPS * 2
                     math_question_active = False
 
-                elif event.key==pygame.K_BACKSPACE:
+                elif event.key == pygame.K_BACKSPACE:
                     user_input = user_input[:-1]
                 elif event.unicode.isdigit() or event.unicode in ["/", ".", "-"]:
                     user_input += event.unicode
 
         keys = pygame.key.get_pressed()
-        if current_scene=="menu":
+        if current_scene == "menu":
             draw_menu()
-        elif current_scene=="level1":
+        elif current_scene == "level1":
             if game_over:
                 draw_game_over()
             else:
