@@ -4,6 +4,11 @@ import sys
 # Initialize
 pygame.init()
 
+# --- Constants ---
+WINDOW_WIDTH = 1000
+WINDOW_HEIGHT = 720
+FPS = 60
+
 # Settings
 WIDTH, HEIGHT = 800, 600
 FPS = 60
