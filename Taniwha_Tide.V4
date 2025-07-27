@@ -190,6 +190,7 @@ def main():
                 if current_scene == "menu" and start_button.collidepoint(event.pos):
                     current_scene = "level1"
             elif event.type == pygame.KEYDOWN and current_scene == "level1" and math_question_active:
+                global lives  # Added to fix UnboundLocalError
                 if event.key == pygame.K_RETURN:
                     if user_input == current_question["answer"]:
                         answer_feedback = "Correct!"
@@ -218,5 +219,3 @@ def main():
                 draw_level_one()
         pygame.display.flip()
         clock.tick(FPS)
-
-main()
