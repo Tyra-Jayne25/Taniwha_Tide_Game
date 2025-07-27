@@ -66,8 +66,8 @@ water_rings = [
 ]
 
 # --- Background ---
-background_image = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-background_image.fill(WATER_BLUE)
+background_image = pygame.image.load("Lvl1_water_background.png").convert()
+background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
 background_width = background_image.get_width()
 
 # --- Obstacles Generation ---
