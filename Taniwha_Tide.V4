@@ -19,6 +19,7 @@ TANIWHA_GREEN = (34, 139, 34)
 MATH_RING_COLOR = (0, 255, 0)
 MATH_RING_TRIGGERED = (255, 0, 0)
 RED = (255, 50, 50)
+GREEN = (0, 255, 0)
 BROWN = (139, 69, 19)
 PINK = (255, 182, 193)
 
@@ -41,7 +42,7 @@ except:
 start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60)
 
 # --- Taniwha Sprite ---
-taniwha_sprite = pygame.Surface((300, 40))
+taniwha_sprite = pygame.Surface((400, 60))  # Bigger taniwha
 taniwha_sprite.fill(TANIWHA_GREEN)
 taniwha_rect = taniwha_sprite.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150))
 taniwha_speed = 5
@@ -49,11 +50,17 @@ taniwha_speed = 5
 # --- Math Ring ---
 math_ring = pygame.Rect(350, 250, 100, 100)
 ring_triggered = False
+math_question_active = False
+math_question = "5 + 3"
+math_answer = "8"
+user_input = ""
+answer_feedback = ""
 
 # --- Game State ---
 current_scene = "menu"
 camera_x = 0
 lives = 5
+game_over = False
 
 # --- Background Image ---
 background_image = pygame.image.load("Lvl1_water_background.png").convert()
@@ -62,10 +69,10 @@ background_width = background_image.get_width()
 
 # --- Obstacles ---
 obstacles = []
-spacing = 1000
-for i in range(5):
-    net = pygame.Rect(1200 + i * spacing, 350, 30, 30)
-    jelly = pygame.Rect(1600 + i * spacing, 280, 30, 30)
+spacing = 600  # Closer spacing
+for i in range(8):
+    net = pygame.Rect(1200 + i * spacing, 350, 50, 50)  # Bigger
+    jelly = pygame.Rect(1500 + i * spacing, 280, 50, 50)
     obstacles.append(("net", net))
     obstacles.append(("jelly", jelly))
 
@@ -89,6 +96,24 @@ def draw_health():
     label = health_font.render(f"Lives: {lives}", True, RED)
     screen.blit(label, (20, 20))
 
+# --- Math Question UI ---
+def handle_math_question():
+    if math_question_active:
+        question_text = health_font.render(f"Question: {math_question}", True, WHITE)
+        input_text = health_font.render(f"Answer: {user_input}", True, WHITE)
+        feedback_text = health_font.render(answer_feedback, True, RED if answer_feedback == "Incorrect!" else GREEN)
+        screen.blit(question_text, (WINDOW_WIDTH//2 - 100, 100))
+        screen.blit(input_text, (WINDOW_WIDTH//2 - 100, 140))
+        if answer_feedback:
+            screen.blit(feedback_text, (WINDOW_WIDTH//2 - 100, 180))
+
+# --- Game Over Screen ---
+def draw_game_over():
+    screen.fill(SEA_BLUE)
+    over_text = title_font.render("GAME OVER", True, RED)
+    over_rect = over_text.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2))
+    screen.blit(over_text, over_rect)
+
 # --- Draw Level 1 ---
 def draw_level_one():
     rel_x = camera_x % background_width
@@ -105,18 +130,16 @@ def draw_level_one():
         pygame.draw.rect(screen, color, shifted)
 
     draw_health()
+    handle_math_question()
 
 # --- Movement ---
 def handle_movement(keys):
     global camera_x
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_LEFT] and taniwha_rect.x > 0:
         taniwha_rect.x -= taniwha_speed
-        if taniwha_rect.x < 100 and camera_x > 0:
-            camera_x -= taniwha_speed
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_RIGHT] and taniwha_rect.x < WINDOW_WIDTH - taniwha_rect.width:
         taniwha_rect.x += taniwha_speed
-        if taniwha_rect.x > WINDOW_WIDTH - 400:
-            camera_x += taniwha_speed
+        camera_x += taniwha_speed
     if keys[pygame.K_UP]:
         taniwha_rect.y -= taniwha_speed
     if keys[pygame.K_DOWN]:
@@ -124,23 +147,29 @@ def handle_movement(keys):
 
 # --- Trigger Logic ---
 def check_ring_trigger():
-    global ring_triggered
-    ring_triggered = taniwha_rect.colliderect(math_ring)
+    global ring_triggered, math_question_active, user_input, answer_feedback
+    if taniwha_rect.colliderect(math_ring) and not ring_triggered:
+        ring_triggered = True
+        math_question_active = True
+        user_input = ""
+        answer_feedback = ""
 
 # --- Collision Detection ---
 def check_obstacle_collision():
-    global lives
+    global lives, game_over
     for kind, rect in obstacles:
         shifted = pygame.Rect(rect.x - camera_x, rect.y, rect.width, rect.height)
         if taniwha_rect.colliderect(shifted):
             lives -= 1
             print(f"Collision with {kind}! Lives left: {lives}")
             obstacles.remove((kind, rect))
+            if lives <= 0:
+                game_over = True
             break
 
 # --- Main Loop ---
 def main():
-    global current_scene
+    global current_scene, user_input, answer_feedback, math_question_active
 
     while True:
         for event in pygame.event.get():
@@ -151,15 +180,32 @@ def main():
                 if current_scene == "menu" and start_button.collidepoint(event.pos):
                     print("Start button clicked — entering Level 1")
                     current_scene = "level1"
+            elif event.type == pygame.KEYDOWN and current_scene == "level1":
+                if math_question_active:
+                    if event.key == pygame.K_RETURN:
+                        if user_input == math_answer:
+                            answer_feedback = "Correct!"
+                            math_question_active = False
+                        else:
+                            answer_feedback = "Incorrect!"
+                            lives -= 1
+                            math_question_active = False
+                    elif event.key == pygame.K_BACKSPACE:
+                        user_input = user_input[:-1]
+                    elif event.unicode.isdigit():
+                        user_input += event.unicode
 
         keys = pygame.key.get_pressed()
         if current_scene == "menu":
             draw_menu()
         elif current_scene == "level1":
-            handle_movement(keys)
-            check_ring_trigger()
-            check_obstacle_collision()
-            draw_level_one()
+            if game_over:
+                draw_game_over()
+            else:
+                handle_movement(keys)
+                check_ring_trigger()
+                check_obstacle_collision()
+                draw_level_one()
 
         pygame.display.flip()
         clock.tick(FPS)
