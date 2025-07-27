@@ -30,7 +30,7 @@ button_font = pygame.font.SysFont("Arial", 36)
 health_font = pygame.font.SysFont("Arial", 28)
 
 # --- Assets ---
-net_image = pygame.image.load("nets_obstacle.png").convert_alpha()
+net_image = pygame.image.load("net_obstacle.png").convert_alpha()
 jelly_image = pygame.image.load("jelly_obstacle.png").convert_alpha()
 
 # --- Game State ---
@@ -38,7 +38,7 @@ current_scene = "menu"
 camera_x = 0
 lives = 5
 game_over = False
-user_input = ""
+user_mninput = ""
 answer_feedback = ""
 feedback_timer = 0
 math_question_active = False
@@ -58,8 +58,9 @@ taniwha_speed = 5
 start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60)
 
 # --- Background ---
-background_image = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-background_image.fill(WATER_BLUE)
+background_image = pygame.image.load("Lvl1_water_background.png").convert()
+background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
+background_width = background_image.get_width()
 
 # --- Level Setup ---
 level_width = 3000
@@ -246,8 +247,6 @@ def handle_input(event):
                     feedback_timer = 120
                     user_input = ""
                     math_question_active = False
-    else:
-        user_input += event.unicode
 
 # --- Life Loss ---
 def lose_life():
