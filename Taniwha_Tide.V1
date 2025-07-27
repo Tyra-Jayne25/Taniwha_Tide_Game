@@ -1,3 +1,67 @@
 import pygame
 import sys
 
+# Initialize
+pygame.init()
+
+# Settings
+WIDTH, HEIGHT = 800, 600
+FPS = 60
+WHITE = (255, 255, 255)
+WATER_BLUE = (0, 105, 148)
+BUTTON_COLOR = (0, 150, 200)
+BUTTON_HOVER = (0, 180, 230)
+TANIWHA_GREEN = (34, 139, 34)
+
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Taniwha Tide")
+clock = pygame.time.Clock()
+
+# Fonts
+title_font = pygame.font.SysFont("Arial", 72, bold=True)
+button_font = pygame.font.SysFont("Arial", 36)
+
+# Button setup
+start_button = pygame.Rect(WIDTH//2 - 100, HEIGHT//2 + 50, 200, 60)
+
+# Taniwha placeholder – long green snake-like shape
+taniwha_sprite = pygame.Surface((300, 40))
+taniwha_sprite.fill(TANIWHA_GREEN)
+taniwha_rect = taniwha_sprite.get_rect(center=(WIDTH//2, HEIGHT//2 + 150))
+
+def draw_menu():
+    screen.fill(WATER_BLUE)
+
+    # Draw Title
+    title_text = title_font.render("Taniwha Tide", True, WHITE)
+    title_rect = title_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 100))
+    screen.blit(title_text, title_rect)
+
+    # Draw Button
+    mouse_pos = pygame.mouse.get_pos()
+    if start_button.collidepoint(mouse_pos):
+        pygame.draw.rect(screen, BUTTON_HOVER, start_button)
+    else:
+        pygame.draw.rect(screen, BUTTON_COLOR, start_button)
+
+    button_text = button_font.render("Start", True, WHITE)
+    button_rect = button_text.get_rect(center=start_button.center)
+    screen.blit(button_text, button_rect)
+
+    # Draw Taniwha
+    screen.blit(taniwha_sprite, taniwha_rect)
+
+    pygame.display.flip()
+
+def main():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if start_button.collidepoint(event.pos):
+                    print("Start button clicked — ready for next stage!")
+
+draw_menu()
+clock.tick(FPS)
