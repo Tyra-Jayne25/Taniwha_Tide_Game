@@ -206,10 +206,10 @@ def main():
                 elif event.unicode.isdigit() or event.unicode in ["/", ".", "-"]:
                     user_input += event.unicode
 
-        keys = pygame.key.get_pressed()
-        if current_scene == "menu":
+keys = pygame.key.get_pressed()
+if current_scene == "menu":
             draw_menu()
-        elif current_scene == "level1":
+elif current_scene == "level1":
             if game_over:
                 draw_game_over()
             else:
@@ -217,6 +217,8 @@ def main():
                 check_ring_triggers()
                 check_obstacle_collision()
                 draw_level_one()
+                draw_health()
+                
 pygame.display.flip()
 clock.tick(FPS)
 
