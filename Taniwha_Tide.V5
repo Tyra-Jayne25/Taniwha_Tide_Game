@@ -38,7 +38,7 @@ current_scene = "menu"
 camera_x = 0
 lives = 5
 game_over = False
-user_mninput = ""
+user_input = ""
 answer_feedback = ""
 feedback_timer = 0
 math_question_active = False
@@ -247,6 +247,9 @@ def handle_input(event):
                     feedback_timer = 120
                     user_input = ""
                     math_question_active = False
+
+        else:
+         user_input += event.unicode
 
 # --- Life Loss ---
 def lose_life():
