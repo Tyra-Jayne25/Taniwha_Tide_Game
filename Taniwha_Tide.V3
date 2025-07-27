@@ -4,85 +4,50 @@ import random
 
 # --- Initialize ---
 pygame.init()
-pygame.font.init()
 
 # --- Constants ---
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 720
 FPS = 60
 WHITE = (255, 255, 255)
-WATER_BLUE = (0, 105, 148)
-SEA_BLUE = (70, 130, 180)
-BUTTON_COLOR = (0, 150, 200)
-BUTTON_HOVER = (0, 180, 230)
+RED = (255, 50, 50)
 TANIWHA_GREEN = (34, 139, 34)
-MATH_RING_COLOR = (0, 255, 0)
-MATH_RING_TRIGGERED = (255, 0, 0)
 BROWN = (139, 69, 19)
 PINK = (255, 182, 193)
-RED = (255, 50, 50)
 
 # --- Display ---
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Taniwha Tide")
 clock = pygame.time.Clock()
 
-# --- Fonts ---
-try:
-    title_font = pygame.font.SysFont("Arial", 72, bold=True)
-    button_font = pygame.font.SysFont("Arial", 36)
-    health_font = pygame.font.SysFont("Arial", 28)
-except:
-    title_font = pygame.font.Font(None, 72)
-    button_font = pygame.font.Font(None, 36)
-    health_font = pygame.font.Font(None, 28)
-
 # --- Game State ---
-current_scene = "menu"
 camera_x = 0
 lives = 5
 
 # --- Background Image ---
 background_image = pygame.image.load("Lvl1_water_background.png").convert()
+background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
 background_width = background_image.get_width()
 
-# --- Button Setup ---
-start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60)
-
 # --- Taniwha Sprite ---
-taniwha_sprite = pygame.Surface((300, 40))
+taniwha_sprite = pygame.Surface((60, 40))  # Simple placeholder
 taniwha_sprite.fill(TANIWHA_GREEN)
 taniwha_rect = taniwha_sprite.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150))
 taniwha_speed = 6
 
-# --- Math Ring ---
-math_ring = pygame.Rect(900, 250, 100, 100)
-ring_triggered = False
-
 # --- Obstacles ---
 obstacles = []
-spacing = 800
-for i in range(3):
-    net = pygame.Rect(1200 + i * spacing, 350, 40, 40)
-    jelly = pygame.Rect(1500 + i * spacing, 280, 40, 40)
+spacing = 1000
+for i in range(5):
+    net = pygame.Rect(1200 + i * spacing, 350, 30, 30)
+    jelly = pygame.Rect(1600 + i * spacing, 280, 30, 30)
     obstacles.append(("net", net))
     obstacles.append(("jelly", jelly))
 
-# --- Draw Menu ---
-def draw_menu():
-    screen.fill(WATER_BLUE)
-    title_text = title_font.render("Taniwha Tide", True, WHITE)
-    screen.blit(title_text, title_text.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 100)))
-
-    mouse_pos = pygame.mouse.get_pos()
-    color = BUTTON_HOVER if start_button.collidepoint(mouse_pos) else BUTTON_COLOR
-    pygame.draw.rect(screen, color, start_button)
-    label = button_font.render("Start", True, WHITE)
-    screen.blit(label, label.get_rect(center=start_button.center))
-
 # --- Health Bar ---
 def draw_health():
-    label = health_font.render(f"Lives: {lives}", True, RED)
+    font = pygame.font.SysFont("Arial", 28)
+    label = font.render(f"Lives: {lives}", True, RED)
     screen.blit(label, (20, 20))
 
 # --- Draw Level 1 ---
@@ -93,8 +58,6 @@ def draw_level_one():
     if rel_x < WINDOW_WIDTH:
         screen.blit(background_image, (-rel_x + background_width, 0))
 
-    shifted_ring = pygame.Rect(math_ring.x - camera_x, math_ring.y, math_ring.width, math_ring.height)
-    pygame.draw.rect(screen, MATH_RING_TRIGGERED if ring_triggered else MATH_RING_COLOR, shifted_ring)
     screen.blit(taniwha_sprite, (taniwha_rect.x, taniwha_rect.y))
 
     for kind, rect in obstacles:
@@ -120,12 +83,7 @@ def handle_movement(keys):
     if keys[pygame.K_DOWN]:
         taniwha_rect.y += taniwha_speed
 
-# --- Trigger & Collision ---
-def check_ring_trigger():
-    global ring_triggered
-    shifted_ring = pygame.Rect(math_ring.x - camera_x, math_ring.y, math_ring.width, math_ring.height)
-    ring_triggered = taniwha_rect.colliderect(shifted_ring)
-
+# --- Collision ---
 def check_obstacle_collision():
     global lives
     for kind, rect in obstacles:
@@ -138,34 +96,15 @@ def check_obstacle_collision():
 
 # --- Main Loop ---
 def main():
-    global current_scene
-    keys = pygame.key.get_pressed()
-
-    if current_scene == "menu":
-        draw_menu()
-    elif current_scene == "level1":
-        handle_movement(keys)
-        check_ring_trigger()
-        check_obstacle_collision()
-        draw_level_one()
-    pygame.display.flip()
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit(); sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if current_scene == "menu" and start_button.collidepoint(event.pos):
-                    current_scene = "level1"
 
         keys = pygame.key.get_pressed()
-        if current_scene == "menu":
-            draw_menu()
-        elif current_scene == "level1":
-            handle_movement(keys)
-            check_ring_trigger()
-            check_obstacle_collision()
-            draw_level_one()
+        handle_movement(keys)
+        check_obstacle_collision()
+        draw_level_one()
 
         pygame.display.flip()
         clock.tick(FPS)
