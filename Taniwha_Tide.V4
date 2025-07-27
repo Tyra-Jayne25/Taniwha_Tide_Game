@@ -217,5 +217,7 @@ def main():
                 check_ring_triggers()
                 check_obstacle_collision()
                 draw_level_one()
-        pygame.display.flip()
-        clock.tick(FPS)
+pygame.display.flip()
+clock.tick(FPS)
+
+main()
