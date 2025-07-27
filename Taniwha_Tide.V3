@@ -1,0 +1,121 @@
+import pygame
+import sys
+
+pygame.init()
+
+# === Basic Setup ===
+WIDTH, HEIGHT = 800, 500
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Taniwha Tide - Version 3")
+clock = pygame.time.Clock()
+FPS = 60
+
+# === Scene Logic ===
+current_scene = "menu"
+camera_x = 0
+SCROLL_THRESHOLD = 200
+SCROLL_SPEED = 5
+
+# === Colors ===
+DEEP_BLUE = (15, 30, 70)
+WHITE = (255, 255, 255)
+BROWN = (139, 69, 19)
+PINK = (255, 182, 193)
+
+# === Sprites & Assets ===
+# Place sprites in 'assets/' folder
+taniwha_sprite = pygame.Surface((80, 40))  # Placeholder Taniwha
+taniwha_sprite.fill(WHITE)
+taniwha_rect = taniwha_sprite.get_rect()
+taniwha_rect.topleft = (50, 300)
+
+try:
+    net_sprite = pygame.image.load("assets/net.png").convert_alpha()
+except:
+    net_sprite = None
+try:
+    jelly_sprite = pygame.image.load("assets/jellyfish.png").convert_alpha()
+except:
+    jelly_sprite = None
+
+# === UI Elements ===
+start_button = pygame.Rect(WIDTH//2 - 75, HEIGHT//2 - 30, 150, 60)
+
+# === Obstacle Logic ===
+level_objects = []
+
+def spawn_obstacles():
+    for i in range(5):
+        net = pygame.Rect(400 + i * 300, 350, 40, 40)
+        jelly = pygame.Rect(600 + i * 300, 300, 40, 40)
+        level_objects.append(("net", net))
+        level_objects.append(("jelly", jelly))
+
+# === Movement Handling ===
+def handle_movement(keys):
+    global taniwha_rect, camera_x
+    if keys[pygame.K_RIGHT]:
+        taniwha_rect.x += 5
+        if taniwha_rect.x > WIDTH - SCROLL_THRESHOLD:
+            taniwha_rect.x = WIDTH - SCROLL_THRESHOLD
+            camera_x += SCROLL_SPEED
+    elif keys[pygame.K_LEFT] and camera_x > 0:
+        taniwha_rect.x -= 5
+        if taniwha_rect.x < SCROLL_THRESHOLD:
+            taniwha_rect.x = SCROLL_THRESHOLD
+            camera_x -= SCROLL_SPEED
+
+# === Scene Draw Functions ===
+def draw_menu():
+    screen.fill(DEEP_BLUE)
+    pygame.draw.rect(screen, WHITE, start_button)
+    font = pygame.font.SysFont(None, 40)
+    title = font.render("Start Taniwha Tide", True, DEEP_BLUE)
+    screen.blit(title, (start_button.x + 10, start_button.y + 15))
+
+def draw_level_one():
+    screen.fill(DEEP_BLUE)
+    for obj_type, rect in level_objects:
+        draw_rect = pygame.Rect(rect.x - camera_x, rect.y, rect.width, rect.height)
+        if obj_type == "net":
+            if net_sprite: screen.blit(net_sprite, draw_rect)
+            else: pygame.draw.rect(screen, BROWN, draw_rect)
+        elif obj_type == "jelly":
+            if jelly_sprite: screen.blit(jelly_sprite, draw_rect)
+            else: pygame.draw.rect(screen, PINK, draw_rect)
+    screen.blit(taniwha_sprite, (taniwha_rect.x, taniwha_rect.y))
+
+# === Game Loop ===
+def main():
+    global current_scene
+    spawn_obstacles()  # Load obstacles at start
+
+    # Initial draw
+    if current_scene == "menu":
+        draw_menu()
+    elif current_scene == "level1":
+        keys = pygame.key.get_pressed()
+        handle_movement(keys)
+        draw_level_one()
+    pygame.display.flip()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if current_scene == "menu" and start_button.collidepoint(event.pos):
+                    current_scene = "level1"
+
+        keys = pygame.key.get_pressed()
+        if current_scene == "menu":
+            draw_menu()
+        elif current_scene == "level1":
+            handle_movement(keys)
+            draw_level_one()
+
+        pygame.display.flip()
+        clock.tick(FPS)
+
+main()
