@@ -3,6 +3,7 @@ import sys
 
 # Initialize
 pygame.init()
+pygame.font.init()  # Ensure font module is ready
 
 # --- Constants ---
 WINDOW_WIDTH = 1000
@@ -19,9 +20,13 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Taniwha Tide")
 clock = pygame.time.Clock()
 
-# Fonts
-title_font = pygame.font.SysFont("Arial", 72, bold=True)
-button_font = pygame.font.SysFont("Arial", 36)
+# Fonts (fallback to default if Arial fails)
+try:
+    title_font = pygame.font.SysFont("Arial", 72, bold=True)
+    button_font = pygame.font.SysFont("Arial", 36)
+except:
+    title_font = pygame.font.Font(None, 72)
+    button_font = pygame.font.Font(None, 36)
 
 # Button setup
 start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60)
@@ -60,8 +65,17 @@ def draw_level_one():
     screen.fill(SEA_BLUE)
     screen.blit(taniwha_sprite, taniwha_rect)
 
+# --- Main loop ---
 def main():
     global current_scene
+
+# Initial draw before event loop
+    if current_scene == "menu":
+        draw_menu()
+    elif current_scene == "level1":
+        draw_level_one()
+    pygame.display.flip()
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
