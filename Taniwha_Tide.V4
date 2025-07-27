@@ -218,8 +218,9 @@ def handle_movement(keys):
 def check_ring_triggers():
     global math_question_active, user_input, answer_feedback, feedback_timer, current_question
     for ring in water_rings:
-        r = ring["rect"].move(-camera_x, 0)
-        if taniwha_rect.colliderect(r) and not ring["triggered"]:
+        ring_screen_rect = ring["rect"].move(-camera_x, 0)
+        taniwha_screen_rect = taniwha_rect.move(-camera_x, 0)
+        if taniwha_screen_rect.colliderect(ring_screen_rect) and not ring["triggered"]:
             ring["triggered"] = True
             math_question_active = True
             current_question = ring
