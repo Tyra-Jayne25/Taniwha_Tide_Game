@@ -67,32 +67,32 @@ level_width = 2200
 # Load images
 try:
     net_image = pygame.image.load("net_obstacle.png").convert_alpha()
-    net_image = pygame.transform.scale(net_image, (100, 100))
+    net_image = pygame.transform.scale(net_image, (80, 80))
     jellyfish_image = pygame.image.load("jelly_obstacle.png").convert_alpha()
-    jellyfish_image = pygame.transform.scale(jellyfish_image, (120, 120))
+    jellyfish_image = pygame.transform.scale(jellyfish_image, (80, 80))
     background_image = pygame.image.load("Lvl1_water_background.png").convert()
     background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
-    background_width = background_image.get_width()
-    water_ring_img = pygame.image.load("water_ring.png").convert_alpha()
-    water_ring_img = pygame.transform.scale(water_ring_img, (100, 100))
+    water_ring_img = pygame.Surface((80, 80), pygame.SRCALPHA)
+    pygame.draw.circle(water_ring_img, LIGHT_BLUE, (40, 40), 35, 5)
+    pygame.draw.circle(water_ring_img, SEA_BLUE, (40, 40), 25, 5)
 except:
     # Fallback if images not found
-    net_image = pygame.Surface((100, 100))
+    net_image = pygame.Surface((80, 80))
     net_image.fill(BROWN)
-    jellyfish_image = pygame.Surface((120, 120))
+    jellyfish_image = pygame.Surface((80, 80))
     jellyfish_image.fill(PINK)
     background_image = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
     background_image.fill(WATER_BLUE)
-    water_ring_img = pygame.Surface((100, 100), pygame.SRCALPHA)
-    pygame.draw.circle(water_ring_img, LIGHT_BLUE, (50, 50), 45, 5)
-    pygame.draw.circle(water_ring_img, SEA_BLUE, (50, 50), 35, 5)
+    water_ring_img = pygame.Surface((80, 80), pygame.SRCALPHA)
+    pygame.draw.circle(water_ring_img, LIGHT_BLUE, (40, 40), 35, 5)
+    pygame.draw.circle(water_ring_img, SEA_BLUE, (40, 40), 25, 5)
 
 background_width = background_image.get_width()
 algebra_bg = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
 algebra_bg.fill((50, 50, 80))
 
 # Safe spawn area
-SAFE_SPAWN_RADIUS = 400  # Increased safe area
+SAFE_SPAWN_RADIUS = 400
 spawn_center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)
 
 # Generate water rings with proper spacing for level 1 (fractions)
@@ -129,7 +129,7 @@ def generate_water_rings():
     
     for (x, y), q in zip(positions[:10], questions):
         rings.append({
-            "rect": pygame.Rect(x, y, 100, 100),
+            "rect": pygame.Rect(x, y, 80, 80),
             "question": q["question"],
             "answer_frac": q["answer_frac"],
             "triggered": False,
@@ -169,7 +169,7 @@ def generate_algebra_rings():
     
     for (x, y), q in zip(positions[:10], questions):
         rings.append({
-            "rect": pygame.Rect(x, y, 100, 100),
+            "rect": pygame.Rect(x, y, 80, 80),
             "question": q["question"],
             "answer": q["answer"],
             "triggered": False,
@@ -185,56 +185,51 @@ portal_rect = pygame.Rect(level_width - 150, WINDOW_HEIGHT//2 - 75, 120, 150)
 portal_active = False
 
 # Generate obstacles with proper spacing
-def generate_obstacles(level_width):
+def generate_obstacles():
     obstacles = []
-    OB_COUNT = 20
-    MIN_DIST_FROM_OBSTACLE = 200  # Increased minimum distance
+    OB_SIZE = 80
     MIN_DIST_FROM_RING = 200
+    MIN_DIST_FROM_OBSTACLE = 160
     MIN_DIST_FROM_PORTAL = 300
-    OB_SIZE = 100
-    
-    rings = water_rings if current_level == 1 else algebra_rings
-    ring_rects = [ring["rect"] for ring in rings]
-    
-    for _ in range(OB_COUNT):
+    TARGET_COUNT = 15
+
+    for _ in range(TARGET_COUNT):
         placed = False
         attempts = 0
-        
-        while not placed and attempts < 100:
-            # Place obstacles only in front of spawn (right side)
+        while not placed and attempts < 50:
             x = random.randint(WINDOW_WIDTH//2 + 200, level_width - OB_SIZE)
             y = random.randint(50, WINDOW_HEIGHT - 50 - OB_SIZE)
             rect = pygame.Rect(x, y, OB_SIZE, OB_SIZE)
-            
+
             # Check spawn area
             dist_to_spawn = ((rect.centerx - spawn_center[0])**2 + 
                            (rect.centery - spawn_center[1])**2)**0.5
             if dist_to_spawn < SAFE_SPAWN_RADIUS:
                 attempts += 1
                 continue
-                
+
             # Check rings
-            too_close_to_ring = False
-            for ring_rect in ring_rects:
-                dx = rect.centerx - ring_rect.centerx
-                dy = rect.centery - ring_rect.centery
+            too_close = False
+            rings = water_rings if current_level == 1 else algebra_rings
+            for ring in rings:
+                dx = rect.centerx - ring["rect"].centerx
+                dy = rect.centery - ring["rect"].centery
                 dist = (dx**2 + dy**2)**0.5
                 if dist < MIN_DIST_FROM_RING:
-                    too_close_to_ring = True
+                    too_close = True
                     break
-            if too_close_to_ring:
+            if too_close:
                 attempts += 1
                 continue
-                
+
             # Check portal
-            if current_level == 1:
-                dx = rect.centerx - portal_rect.centerx
-                dy = rect.centery - portal_rect.centery
-                dist = (dx**2 + dy**2)**0.5
-                if dist < MIN_DIST_FROM_PORTAL:
-                    attempts += 1
-                    continue
-                
+            dx = rect.centerx - portal_rect.centerx
+            dy = rect.centery - portal_rect.centery
+            dist = (dx**2 + dy**2)**0.5
+            if dist < MIN_DIST_FROM_PORTAL:
+                attempts += 1
+                continue
+
             # Check other obstacles
             overlap = False
             for _, o_rect in obstacles:
@@ -247,14 +242,14 @@ def generate_obstacles(level_width):
             if overlap:
                 attempts += 1
                 continue
-                
+
             kind = random.choice(["net", "jelly"])
             obstacles.append((kind, rect))
             placed = True
-            
+
     return obstacles
 
-obstacles = generate_obstacles(level_width)
+obstacles = generate_obstacles()
 
 # Drawing functions
 def draw_menu():
@@ -329,11 +324,11 @@ def draw_water_rings():
         if ring["answered"]:
             # Draw checkmark on answered rings
             screen.blit(water_ring_img, r)
-            pygame.draw.line(screen, GREEN, (r.centerx-20, r.centery), (r.centerx, r.centery+20), 4)
-            pygame.draw.line(screen, GREEN, (r.centerx, r.centery+20), (r.centerx+30, r.centery-20), 4)
+            pygame.draw.line(screen, GREEN, (r.centerx-15, r.centery), (r.centerx, r.centery+15), 4)
+            pygame.draw.line(screen, GREEN, (r.centerx, r.centery+15), (r.centerx+25, r.centery-15), 4)
         elif ring["triggered"]:
             # Pulsing effect for active rings
-            size = 100 + int(5 * pygame.time.get_ticks() % 10)
+            size = 80 + int(5 * pygame.time.get_ticks() % 10)
             temp_img = pygame.transform.scale(water_ring_img, (size, size))
             temp_rect = temp_img.get_rect(center=r.center)
             screen.blit(temp_img, temp_rect)
@@ -400,7 +395,7 @@ def handle_movement(keys):
             taniwha_rect.x = 100
             taniwha_rect.y = WINDOW_HEIGHT//2
             camera_x = 0
-            obstacles = generate_obstacles(level_width)
+            obstacles = generate_obstacles()
 
     left_bound = WINDOW_WIDTH * 0.3
     right_bound = WINDOW_WIDTH * 0.7
