@@ -66,12 +66,13 @@ level_width = 2200
 
 # Load images
 try:
-    net_image = pygame.image.load("net.png").convert_alpha()
+    net_image = pygame.image.load("net_obstacle.png").convert_alpha()
     net_image = pygame.transform.scale(net_image, (100, 100))
-    jellyfish_image = pygame.image.load("jellyfish.png").convert_alpha()
+    jellyfish_image = pygame.image.load("jelly_obstacle.png").convert_alpha()
     jellyfish_image = pygame.transform.scale(jellyfish_image, (120, 120))
     background_image = pygame.image.load("Lvl1_water_background.png").convert()
     background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
+    background_width = background_image.get_width()
     water_ring_img = pygame.image.load("water_ring.png").convert_alpha()
     water_ring_img = pygame.transform.scale(water_ring_img, (100, 100))
 except:
@@ -94,7 +95,7 @@ algebra_bg.fill((50, 50, 80))
 SAFE_SPAWN_RADIUS = 400  # Increased safe area
 spawn_center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)
 
-# Generate water rings with proper spacing
+# Generate water rings with proper spacing for level 1 (fractions)
 def generate_water_rings():
     rings = []
     # Define grid positions for rings to ensure spacing
@@ -136,9 +137,7 @@ def generate_water_rings():
         })
     return rings
 
-water_rings = generate_water_rings()
-
-# Algebra rings with proper spacing
+# Generate algebra rings for level 2
 def generate_algebra_rings():
     rings = []
     grid_cols = 4
@@ -178,6 +177,7 @@ def generate_algebra_rings():
         })
     return rings
 
+water_rings = generate_water_rings()
 algebra_rings = generate_algebra_rings()
 
 # Portal
