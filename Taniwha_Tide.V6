@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import math
 from fractions import Fraction
 
 # Initialize pygame
@@ -44,9 +45,9 @@ start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60
 
 # Load images
 try:
-    # Taniwha image with hurt state
+    # Taniwha image with hurt state - now larger (200x100)
     taniwha_img = pygame.image.load("Taniwha.png").convert_alpha()
-    taniwha_img = pygame.transform.scale(taniwha_img, (120, 60))  # Adjust size as needed
+    taniwha_img = pygame.transform.scale(taniwha_img, (300, 200))  # Increased size
     taniwha_hurt_img = taniwha_img.copy()  # Create a copy to modify
     # Create a red overlay for hurt state
     hurt_overlay = pygame.Surface(taniwha_img.get_size(), pygame.SRCALPHA)
@@ -54,17 +55,17 @@ try:
     taniwha_hurt_img.blit(hurt_overlay, (0, 0), special_flags=pygame.BLEND_MULT)
     
     net_image = pygame.image.load("net_obstacle.png").convert_alpha()
-    net_image = pygame.transform.scale(net_image, (80, 80))
+    net_image = pygame.transform.scale(net_image, (90, 90))
     jellyfish_image = pygame.image.load("jelly_obstacle.png").convert_alpha()
-    jellyfish_image = pygame.transform.scale(jellyfish_image, (80, 80))
+    jellyfish_image = pygame.transform.scale(jellyfish_image, (90, 90))
     background_image = pygame.image.load("Lvl1_water_background.png").convert()
     background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
-    water_ring_img = pygame.Surface((80, 80), pygame.SRCALPHA)
-    pygame.draw.circle(water_ring_img, LIGHT_BLUE, (40, 40), 35, 5)
-    pygame.draw.circle(water_ring_img, SEA_BLUE, (40, 40), 25, 5)
+    
+    # Create animated water ring surface
+    water_ring_img = pygame.Surface((120, 120), pygame.SRCALPHA)  # Larger for better effect
 except:
     # Fallback if images not found
-    taniwha_img = pygame.Surface((120, 60))
+    taniwha_img = pygame.Surface((200, 100))
     taniwha_img.fill(TANIWHA_GREEN)
     taniwha_hurt_img = taniwha_img.copy()
     hurt_overlay = pygame.Surface(taniwha_img.get_size())
@@ -77,9 +78,7 @@ except:
     jellyfish_image.fill(PINK)
     background_image = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
     background_image.fill(WATER_BLUE)
-    water_ring_img = pygame.Surface((80, 80), pygame.SRCALPHA)
-    pygame.draw.circle(water_ring_img, LIGHT_BLUE, (40, 40), 35, 5)
-    pygame.draw.circle(water_ring_img, SEA_BLUE, (40, 40), 25, 5)
+    water_ring_img = pygame.Surface((120, 120), pygame.SRCALPHA)
 
 taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150))
 taniwha_speed = 5
@@ -111,6 +110,10 @@ algebra_bg.fill((50, 50, 80))
 # Safe spawn area
 SAFE_SPAWN_RADIUS = 400
 spawn_center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)
+
+# Water ring animation variables
+ring_animation_time = 0
+RING_ANIMATION_SPEED = 0.1
 
 # Generate water rings with proper spacing for level 1 (fractions)
 def generate_water_rings():
@@ -146,11 +149,12 @@ def generate_water_rings():
     
     for (x, y), q in zip(positions[:10], questions):
         rings.append({
-            "rect": pygame.Rect(x, y, 80, 80),
+            "rect": pygame.Rect(x, y, 120, 120),  # Larger rect for new animation
             "question": q["question"],
             "answer_frac": q["answer_frac"],
             "triggered": False,
-            "answered": False
+            "answered": False,
+            "animation_offset": random.uniform(0, 2*math.pi)  # Random start for wave effect
         })
     return rings
 
@@ -186,11 +190,12 @@ def generate_algebra_rings():
     
     for (x, y), q in zip(positions[:10], questions):
         rings.append({
-            "rect": pygame.Rect(x, y, 80, 80),
+            "rect": pygame.Rect(x, y, 120, 120),  # Larger rect for new animation
             "question": q["question"],
             "answer": q["answer"],
             "triggered": False,
-            "answered": False
+            "answered": False,
+            "animation_offset": random.uniform(0, 2*math.pi)  # Random start for wave effect
         })
     return rings
 
@@ -334,23 +339,59 @@ def draw_portal():
         label = math_font.render(f"{total_questions - questions_answered} left", True, PURPLE)
     screen.blit(label, (portal_screen_rect.centerx - label.get_width()//2, portal_screen_rect.centery + 80))
 
+def draw_water_ring_animation(surface, rect, time_offset):
+    """Draw an animated water ring with ripple effect"""
+    current_time = pygame.time.get_ticks() * 0.001  # Convert to seconds
+    wave_time = current_time + time_offset
+    
+    # Create a temporary surface for the ring
+    temp_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+    
+    # Draw concentric circles with wave effect
+    for i in range(1, 4):
+        radius = 20 + i * 10 + math.sin(wave_time * 2 + i) * 5  # Pulsing effect
+        alpha = 200 - i * 50  # Fade outer rings
+        width = max(1, 6 - i)  # Thinner outer rings
+        
+        color = list(LIGHT_BLUE)
+        color.append(alpha)  # Add alpha channel
+        pygame.draw.circle(temp_surface, color, 
+                          (rect.width//2, rect.height//2), 
+                          radius, width)
+    
+    # Draw the main ring with more pronounced wave
+    main_radius = 30 + math.sin(wave_time * 3) * 8
+    pygame.draw.circle(temp_surface, SEA_BLUE + (150,),  # Semi-transparent
+                      (rect.width//2, rect.height//2), 
+                      main_radius, 4)
+    
+    # Draw inner ring
+    inner_radius = 15 + math.cos(wave_time * 4) * 3
+    pygame.draw.circle(temp_surface, LIGHT_BLUE + (200,), 
+                      (rect.width//2, rect.height//2), 
+                      inner_radius, 2)
+    
+    # Draw to screen
+    screen.blit(temp_surface, rect)
+
 def draw_water_rings():
     rings = water_rings if current_level == 1 else algebra_rings
     for ring in rings:
         r = ring["rect"].move(-camera_x, 0)
         if ring["answered"]:
             # Draw checkmark on answered rings
-            screen.blit(water_ring_img, r)
+            draw_water_ring_animation(water_ring_img, r, ring["animation_offset"])
             pygame.draw.line(screen, GREEN, (r.centerx-15, r.centery), (r.centerx, r.centery+15), 4)
             pygame.draw.line(screen, GREEN, (r.centerx, r.centery+15), (r.centerx+25, r.centery-15), 4)
         elif ring["triggered"]:
             # Pulsing effect for active rings
-            size = 80 + int(5 * pygame.time.get_ticks() % 10)
-            temp_img = pygame.transform.scale(water_ring_img, (size, size))
+            size = 120 + int(10 * math.sin(pygame.time.get_ticks() * 0.005))  # More dramatic pulse
+            temp_img = pygame.Surface((size, size), pygame.SRCALPHA)
+            draw_water_ring_animation(temp_img, pygame.Rect(0, 0, size, size), ring["animation_offset"])
             temp_rect = temp_img.get_rect(center=r.center)
             screen.blit(temp_img, temp_rect)
         else:
-            screen.blit(water_ring_img, r)
+            draw_water_ring_animation(water_ring_img, r, ring["animation_offset"])
 
 def draw_taniwha():
     global hurt_timer
