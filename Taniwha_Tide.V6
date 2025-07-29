@@ -44,31 +44,34 @@ start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60
 
 # Load images
 try:
+    # Original images from Version 5
     net_image = pygame.image.load("net_obstacle.png").convert_alpha()
     net_image = pygame.transform.scale(net_image, (80, 80))
     jellyfish_image = pygame.image.load("jelly_obstacle.png").convert_alpha()
     jellyfish_image = pygame.transform.scale(jellyfish_image, (80, 80))
     background_image = pygame.image.load("Lvl1_water_background.png").convert()
     background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
+    
+    # NEW: Taniwha sprites
+    taniwha_img = pygame.image.load("taniwha.png").convert_alpha()
+    taniwha_hurt_img = pygame.image.load("taniwha_hurt_sprite.png").convert_alpha()
+    
+    # Keep original size from image
+    taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150))
+    
+    # Water ring with bubble effect
     water_ring_img = pygame.Surface((80, 80), pygame.SRCALPHA)
     pygame.draw.circle(water_ring_img, LIGHT_BLUE, (40, 40), 35, 5)
     pygame.draw.circle(water_ring_img, SEA_BLUE, (40, 40), 25, 5)
-    
-    # Taniwha sprites
-    taniwha_img = pygame.image.load("Taniwha.png").convert_alpha()
-    taniwha_img = pygame.transform.scale(taniwha_img, (400, 60))
-    taniwha_hurt_img = pygame.image.load("Taniwha_hurt.png").convert_alpha()
-    taniwha_hurt_img = pygame.transform.scale(taniwha_hurt_img, (400, 60))
-    taniwha_hurt_img.set_colorkey(RED)
-    taniwha_img.set_colorkey(TANIWHA_GREEN)
-    taniwha_img.set_alpha(200)
-    taniwha_hurt_img.set_alpha(200)
-    taniwha_img = pygame.transform.rotate(taniwha_img, 90)
-    taniwha_hurt_img = pygame.transform.rotate(taniwha_hurt_img,90)
-    taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150))
-    
+    # Add bubbles
+    for _ in range(5):
+        x = random.randint(20, 60)
+        y = random.randint(20, 60)
+        size = random.randint(2, 4)
+        pygame.draw.circle(water_ring_img, WHITE, (x, y), size)
+
 except:
-    # Fallback if images missing
+    # Fallback if images not found
     net_image = pygame.Surface((80, 80))
     net_image.fill(BROWN)
     jellyfish_image = pygame.Surface((80, 80))
@@ -82,6 +85,14 @@ except:
     taniwha_hurt_img = pygame.Surface((400, 60), pygame.SRCALPHA)
     pygame.draw.ellipse(taniwha_hurt_img, RED, (0, 0, 400, 60))
     taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150))
+    
+    water_ring_img = pygame.Surface((80, 80), pygame.SRCALPHA)
+    pygame.draw.circle(water_ring_img, LIGHT_BLUE, (40, 40), 35, 5)
+    pygame.draw.circle(water_ring_img, SEA_BLUE, (40, 40), 25, 5)
+
+background_width = background_image.get_width()
+algebra_bg = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+algebra_bg.fill((50, 50, 80))
 
 # Game state
 current_scene = "menu"
@@ -103,22 +114,14 @@ level_width = 3000
 is_hurt = False
 hurt_timer = 0
 
-background_width = background_image.get_width()
-algebra_bg = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-algebra_bg.fill((50, 50, 80))
-
 # Taniwha movement speed
-taniwha_speed = 7
-
-# Water ring image
-water_ring_img = pygame.Surface((80, 80), pygame.SRCALPHA)
-pygame.draw.circle(water_ring_img, LIGHT_BLUE, (40, 40), 35, 5)
-pygame.draw.circle(water_ring_img, SEA_BLUE, (40, 40), 25, 5)
+taniwha_speed = 8
 
 # Safe spawn area
 SAFE_SPAWN_RADIUS = 400
 spawn_center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)
 
+# Generate water rings (from Version 5 with bubble effect)
 def generate_water_rings():
     rings = []
     positions = [
