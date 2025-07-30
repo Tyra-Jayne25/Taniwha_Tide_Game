@@ -354,7 +354,6 @@ def draw_fractions_practice():
     example = question_font.render(f"Example: {current['example']}", True, WHITE)
     screen.blit(example, example.get_rect(center=(WINDOW_WIDTH//2, 200)))
     
-    # Split explanation into multiple lines if needed
     words = current["explanation"].split()
     lines = []
     current_line = ""
