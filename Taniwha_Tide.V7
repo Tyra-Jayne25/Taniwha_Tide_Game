@@ -32,6 +32,7 @@ HUT_ROOF = (60, 40, 20)
 PRACTICE_BUTTON_COLOR = (100, 200, 100)
 PRACTICE_BUTTON_HOVER = (120, 220, 120)
 HUB_BACKGROUND = (50, 80, 120)
+THEORY_BACKGROUND = (60, 90, 130)
 
 # Create game window
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -44,6 +45,7 @@ button_font = pygame.font.SysFont("Arial", 36)
 health_font = pygame.font.SysFont("Arial", 28)
 math_font = pygame.font.SysFont("Arial", 24)
 question_font = pygame.font.SysFont("Arial", 32, bold=True)
+theory_font = pygame.font.SysFont("Arial", 22)
 
 # Game objects
 start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60)
@@ -104,14 +106,56 @@ questions_answered = 0
 total_questions = 10
 level_width = 2200
 practice_question_index = 0
+show_theory = True  # Toggle between theory and practice
 
-# Practice content
+# Practice content - Enhanced with theory sections
 fractions_practice = [
     {
+        "theory": [
+            "What are fractions?",
+            "Fractions represent parts of a whole. The top number (numerator) shows how many parts we have.",
+            "The bottom number (denominator) shows how many equal parts the whole is divided into.",
+            "Example: 1/2 means 1 part out of 2 equal parts (half). 3/4 means 3 parts out of 4 equal parts.",
+            "",
+            "Types of fractions:",
+            "- Proper: numerator < denominator (e.g., 3/5)",
+            "- Improper: numerator ≥ denominator (e.g., 7/2)",
+            "- Mixed: whole number + fraction (e.g., 2 1/3)"
+        ],
         "example": "1/2 + 1/4 = 3/4",
         "explanation": "Find common denominator (4). Convert 1/2 to 2/4. Add numerators: 2/4 + 1/4 = 3/4"
     },
     {
+        "theory": [
+            "Adding/Subtracting Fractions:",
+            "1. Find a common denominator (LCM of denominators)",
+            "2. Convert each fraction to equivalent with common denominator",
+            "3. Add/subtract numerators, keep denominator same",
+            "4. Simplify if possible",
+            "",
+            "Example: 1/3 + 1/6",
+            "Common denominator is 6",
+            "1/3 becomes 2/6",
+            "2/6 + 1/6 = 3/6 = 1/2"
+        ],
+        "example": "5/6 - 1/2 = 1/3",
+        "explanation": "Common denominator is 6. Convert 1/2 to 3/6. Subtract: 5/6 - 3/6 = 2/6 = 1/3"
+    },
+    {
+        "theory": [
+            "Multiplying Fractions:",
+            "1. Multiply numerators together",
+            "2. Multiply denominators together",
+            "3. Simplify the result",
+            "",
+            "Dividing Fractions:",
+            "1. Flip the second fraction (reciprocal)",
+            "2. Multiply the fractions",
+            "3. Simplify the result",
+            "",
+            "Example: 2/3 × 3/4 = 6/12 = 1/2",
+            "Example: 2/3 ÷ 3/4 = 2/3 × 4/3 = 8/9"
+        ],
         "example": "3/4 × 2/3 = 1/2",
         "explanation": "Multiply numerators (3×2=6) and denominators (4×3=12). Simplify 6/12 to 1/2"
     }
@@ -119,12 +163,48 @@ fractions_practice = [
 
 algebra_practice = [
     {
+        "theory": [
+            "What is Algebra?",
+            "Algebra uses letters (variables) to represent unknown numbers.",
+            "The goal is to find the value of the variable that makes the equation true.",
+            "",
+            "Basic Rules:",
+            "1. Whatever you do to one side, do to the other",
+            "2. Use inverse operations to isolate the variable",
+            "3. Combine like terms when possible"
+        ],
         "example": "x + 3 = 7 → x = 4",
         "explanation": "Subtract 3 from both sides: x = 7 - 3"
     },
     {
+        "theory": [
+            "Solving Equations:",
+            "1. Identify the operation being done to the variable",
+            "2. Do the opposite (inverse) operation to both sides",
+            "3. Simplify both sides",
+            "4. Check your solution by substituting back in",
+            "",
+            "Example: 2x = 10",
+            "Divide both sides by 2: x = 5",
+            "Check: 2×5 = 10 ✓"
+        ],
         "example": "2x = 10 → x = 5",
         "explanation": "Divide both sides by 2: x = 10 ÷ 2"
+    },
+    {
+        "theory": [
+            "Multi-step Equations:",
+            "1. Simplify both sides if needed (distribute, combine like terms)",
+            "2. Move variable terms to one side, constants to other",
+            "3. Isolate the variable",
+            "",
+            "Example: 3x + 2 = 11",
+            "Subtract 2: 3x = 9",
+            "Divide by 3: x = 3",
+            "Check: 3×3 + 2 = 11 ✓"
+        ],
+        "example": "3x + 2 = 11 → x = 3",
+        "explanation": "First subtract 2 from both sides: 3x = 9. Then divide both sides by 3: x = 3"
     }
 ]
 
@@ -345,83 +425,114 @@ def draw_practice_hub():
         screen.blit(txt, txt.get_rect(center=button["rect"].center))
 
 def draw_fractions_practice():
-    screen.fill(HUB_BACKGROUND)
+    global show_theory
     current = fractions_practice[practice_question_index]
     
-    title = title_font.render("Fractions Practice", True, WHITE)
-    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 100)))
+    if show_theory:
+        screen.fill(THEORY_BACKGROUND)
+        title = title_font.render("Fractions Theory", True, WHITE)
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 60)))
+        
+        # Display theory lines
+        for i, line in enumerate(current["theory"]):
+            text = theory_font.render(line, True, WHITE)
+            screen.blit(text, (50, 120 + i * 30))
+    else:
+        screen.fill(HUB_BACKGROUND)
+        title = title_font.render("Fractions Practice", True, WHITE)
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 80)))
+        
+        example = question_font.render(f"Example: {current['example']}", True, WHITE)
+        screen.blit(example, example.get_rect(center=(WINDOW_WIDTH//2, 150)))
+        
+        # Split explanation into multiple lines
+        explanation_lines = current["explanation"].split('\n')
+        for i, line in enumerate(explanation_lines):
+            text = math_font.render(line, True, WHITE)
+            screen.blit(text, (50, 200 + i * 40))
     
-    example = question_font.render(f"Example: {current['example']}", True, WHITE)
-    screen.blit(example, example.get_rect(center=(WINDOW_WIDTH//2, 200)))
-    
-    words = current["explanation"].split()
-    lines = []
-    current_line = ""
-    for word in words:
-        test_line = current_line + word + " "
-        if math_font.size(test_line)[0] < WINDOW_WIDTH - 100:
-            current_line = test_line
-        else:
-            lines.append(current_line)
-            current_line = word + " "
-    lines.append(current_line)
-    
-    for i, line in enumerate(lines):
-        text = math_font.render(line, True, WHITE)
-        screen.blit(text, (50, 250 + i * 40))
-    
-    # Navigation buttons
-    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 200, 60)
-    next_btn = pygame.Rect(WINDOW_WIDTH - 250, WINDOW_HEIGHT - 100, 200, 60)
+    # Navigation buttons with Back to Menu and Toggle Theory/Practice
+    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 150, 60)
+    next_btn = pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 100, 150, 60)
+    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 100, 200, 60)
+    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 180, 200, 60)
     
     mouse_pos = pygame.mouse.get_pos()
-    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if back_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, back_btn)
-    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if next_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, next_btn)
     
-    back_txt = button_font.render("Back", True, WHITE)
-    next_txt = button_font.render("Next", True, WHITE)
+    # Back button (previous example)
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if back_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, back_btn)
+    back_txt = button_font.render("Previous", True, WHITE)
     screen.blit(back_txt, back_txt.get_rect(center=back_btn.center))
+    
+    # Next button (next example)
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if next_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, next_btn)
+    next_txt = button_font.render("Next", True, WHITE)
     screen.blit(next_txt, next_txt.get_rect(center=next_btn.center))
+    
+    # Back to Menu button
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if menu_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, menu_btn)
+    menu_txt = button_font.render("Back to Menu", True, WHITE)
+    screen.blit(menu_txt, menu_txt.get_rect(center=menu_btn.center))
+    
+    # Toggle Theory/Practice button
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if toggle_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, toggle_btn)
+    toggle_txt = button_font.render("Show Practice" if show_theory else "Show Theory", True, WHITE)
+    screen.blit(toggle_txt, toggle_txt.get_rect(center=toggle_btn.center))
 
 def draw_algebra_practice():
-    screen.fill(HUB_BACKGROUND)
+    global show_theory
     current = algebra_practice[practice_question_index]
     
-    title = title_font.render("Algebra Practice", True, WHITE)
-    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 100)))
+    if show_theory:
+        screen.fill(THEORY_BACKGROUND)
+        title = title_font.render("Algebra Theory", True, WHITE)
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 60)))
+        
+        # Display theory lines
+        for i, line in enumerate(current["theory"]):
+            text = theory_font.render(line, True, WHITE)
+            screen.blit(text, (50, 120 + i * 30))
+    else:
+        screen.fill(HUB_BACKGROUND)
+        title = title_font.render("Algebra Practice", True, WHITE)
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 80)))
+        
+        example = question_font.render(f"Example: {current['example']}", True, WHITE)
+        screen.blit(example, example.get_rect(center=(WINDOW_WIDTH//2, 150)))
+        
+        # Split explanation into multiple lines
+        explanation_lines = current["explanation"].split('\n')
+        for i, line in enumerate(explanation_lines):
+            text = math_font.render(line, True, WHITE)
+            screen.blit(text, (50, 200 + i * 40))
     
-    example = question_font.render(f"Example: {current['example']}", True, WHITE)
-    screen.blit(example, example.get_rect(center=(WINDOW_WIDTH//2, 200)))
-    
-    # Split explanation into multiple lines if needed
-    words = current["explanation"].split()
-    lines = []
-    current_line = ""
-    for word in words:
-        test_line = current_line + word + " "
-        if math_font.size(test_line)[0] < WINDOW_WIDTH - 100:
-            current_line = test_line
-        else:
-            lines.append(current_line)
-            current_line = word + " "
-    lines.append(current_line)
-    
-    for i, line in enumerate(lines):
-        text = math_font.render(line, True, WHITE)
-        screen.blit(text, (50, 250 + i * 40))
-    
-    # Navigation buttons (same as fractions)
-    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 200, 60)
-    next_btn = pygame.Rect(WINDOW_WIDTH - 250, WINDOW_HEIGHT - 100, 200, 60)
+    # Navigation buttons with Back to Menu and Toggle Theory/Practice
+    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 150, 60)
+    next_btn = pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 100, 150, 60)
+    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 100, 200, 60)
+    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 180, 200, 60)
     
     mouse_pos = pygame.mouse.get_pos()
-    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if back_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, back_btn)
-    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if next_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, next_btn)
     
-    back_txt = button_font.render("Back", True, WHITE)
-    next_txt = button_font.render("Next", True, WHITE)
+    # Back button (previous example)
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if back_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, back_btn)
+    back_txt = button_font.render("Previous", True, WHITE)
     screen.blit(back_txt, back_txt.get_rect(center=back_btn.center))
+    
+    # Next button (next example)
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if next_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, next_btn)
+    next_txt = button_font.render("Next", True, WHITE)
     screen.blit(next_txt, next_txt.get_rect(center=next_btn.center))
+    
+    # Back to Menu button
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if menu_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, menu_btn)
+    menu_txt = button_font.render("Back to Menu", True, WHITE)
+    screen.blit(menu_txt, menu_txt.get_rect(center=menu_btn.center))
+    
+    # Toggle Theory/Practice button
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if toggle_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, toggle_btn)
+    toggle_txt = button_font.render("Show Practice" if show_theory else "Show Theory", True, WHITE)
+    screen.blit(toggle_txt, toggle_txt.get_rect(center=toggle_btn.center))
 
 def draw_health():
     lbl = health_font.render(f"Lives: {lives}", True, RED)
@@ -680,6 +791,7 @@ def main():
     global current_scene, user_input, answer_feedback, math_question_active
     global current_question, lives, game_over, boost_active, boost_timer, camera_x
     global practice_question_index, questions_answered, water_rings, obstacles
+    global show_theory
 
     running = True
     while running:
@@ -704,6 +816,7 @@ def main():
                     elif practice_button.collidepoint(mouse_pos):
                         current_scene = "practice_hub"
                         practice_question_index = 0
+                        show_theory = True
 
                 elif current_scene == "practice_hub":
                     mouse_pos = pygame.mouse.get_pos()
@@ -711,17 +824,24 @@ def main():
                         if button["rect"].collidepoint(mouse_pos):
                             current_scene = button["target"]
                             practice_question_index = 0
+                            show_theory = True
 
                 elif current_scene in ["fractions_practice", "algebra_practice"]:
                     mouse_pos = pygame.mouse.get_pos()
-                    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 200, 60)
-                    next_btn = pygame.Rect(WINDOW_WIDTH - 250, WINDOW_HEIGHT - 100, 200, 60)
+                    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 150, 60)
+                    next_btn = pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 100, 150, 60)
+                    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 100, 200, 60)
+                    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 180, 200, 60)
                     
                     if back_btn.collidepoint(mouse_pos):
                         practice_question_index = max(0, practice_question_index - 1)
                     elif next_btn.collidepoint(mouse_pos):
                         max_index = len(fractions_practice)-1 if current_scene == "fractions_practice" else len(algebra_practice)-1
                         practice_question_index = min(max_index, practice_question_index + 1)
+                    elif menu_btn.collidepoint(mouse_pos):
+                        current_scene = "menu"
+                    elif toggle_btn.collidepoint(mouse_pos):
+                        show_theory = not show_theory
 
             elif event.type == pygame.KEYDOWN and current_scene == "level1" and math_question_active:
                 if event.key == pygame.K_RETURN:
