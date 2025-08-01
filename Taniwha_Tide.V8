@@ -8,9 +8,9 @@ from fractions import Fraction
 pygame.init()
 pygame.font.init()
 
-# Constants
-WINDOW_WIDTH = 1000
-WINDOW_HEIGHT = 720
+# Constants - Increased window size
+WINDOW_WIDTH = 1200
+WINDOW_HEIGHT = 800
 FPS = 60
 
 # Colors
@@ -33,32 +33,34 @@ PRACTICE_BUTTON_COLOR = (100, 200, 100)
 PRACTICE_BUTTON_HOVER = (120, 220, 120)
 HUB_BACKGROUND = (50, 80, 120)
 THEORY_BACKGROUND = (60, 90, 130)
+INPUT_BOX_COLOR = (200, 200, 200)
 
-# Create game window
+# Create game window with new size
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Taniwha Tide")
 clock = pygame.time.Clock()
 
-# Fonts
-title_font = pygame.font.SysFont("Arial", 72, bold=True)
-button_font = pygame.font.SysFont("Arial", 36)
-health_font = pygame.font.SysFont("Arial", 28)
-math_font = pygame.font.SysFont("Arial", 24)
-question_font = pygame.font.SysFont("Arial", 32, bold=True)
-theory_font = pygame.font.SysFont("Arial", 22)
+# Adjusted font sizes
+title_font = pygame.font.SysFont("Arial", 64, bold=True)  # Reduced from 72
+button_font = pygame.font.SysFont("Arial", 32)  # Reduced from 36
+health_font = pygame.font.SysFont("Arial", 24)  # Reduced from 28
+math_font = pygame.font.SysFont("Arial", 20)  # Reduced from 24
+question_font = pygame.font.SysFont("Arial", 28, bold=True)  # Reduced from 32
+theory_font = pygame.font.SysFont("Arial", 20)  # Reduced from 22
+practice_font = pygame.font.SysFont("Arial", 24)  # For practice problems
 
-# Game objects
+# Game objects - adjusted positions for new window size
 start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60)
-practice_button = pygame.Rect(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT//2 + 50, 80, 80)  # Hut icon button
+practice_button = pygame.Rect(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT//2 + 50, 80, 80)
 
 # Load images
 try:
     # Taniwha image with hurt state
     taniwha_img = pygame.image.load("Taniwha.png").convert_alpha()
-    taniwha_img = pygame.transform.scale(taniwha_img, (300, 200))  # Larger size
+    taniwha_img = pygame.transform.scale(taniwha_img, (300, 200))
     taniwha_hurt_img = taniwha_img.copy()
     hurt_overlay = pygame.Surface(taniwha_img.get_size(), pygame.SRCALPHA)
-    hurt_overlay.fill((255, 0, 0, 128))  # Red with 50% opacity
+    hurt_overlay.fill((255, 0, 0, 128))
     taniwha_hurt_img.blit(hurt_overlay, (0, 0), special_flags=pygame.BLEND_MULT)
     
     net_image = pygame.image.load("net_obstacle.png").convert_alpha()
@@ -89,7 +91,7 @@ hurt_timer = 0
 HURT_DURATION = 30
 
 # Game state
-current_scene = "menu"  # Can be: menu, level1, practice_hub, fractions_practice, algebra_practice
+current_scene = "menu"
 camera_x = 0
 lives = 5
 game_over = False
@@ -106,8 +108,12 @@ questions_answered = 0
 total_questions = 10
 level_width = 2200
 practice_question_index = 0
-show_theory = True  # Toggle between theory and practice
+show_theory = True
 level_complete = False
+
+# Practice input fields
+practice_inputs = {}
+practice_feedback = {}
 
 # Enhanced Practice Content
 fractions_practice = [
@@ -134,11 +140,11 @@ fractions_practice = [
             "Mixed to improper: 2 1/3 = (2×3 + 1)/3 = 7/3"
         ],
         "practice": [
-            {"question": "What fraction of this shape is shaded? (███░░)", "answer": "3/5"},
-            {"question": "Convert 5/2 to a mixed number", "answer": "2 1/2"},
-            {"question": "Convert 3 1/4 to an improper fraction", "answer": "13/4"},
-            {"question": "Which is larger: 3/4 or 5/8?", "answer": "3/4"},
-            {"question": "Find an equivalent fraction to 2/3 with denominator 12", "answer": "8/12"}
+            {"question": "What fraction of this shape is shaded? (███░░) = ", "answer": "3/5"},
+            {"question": "Convert 5/2 to a mixed number = ", "answer": "2 1/2"},
+            {"question": "Convert 3 1/4 to an improper fraction = ", "answer": "13/4"},
+            {"question": "Which is larger: 3/4 or 5/8? = ", "answer": "3/4"},
+            {"question": "Find an equivalent fraction to 2/3 with denominator 12 = ", "answer": "8/12"}
         ]
     },
     {
@@ -217,11 +223,11 @@ fractions_practice = [
             "Solution: 2 1/2 ÷ 4 = 5/2 ÷ 4 = 5/2 × 1/4 = 5/8 pizza each"
         ],
         "practice": [
-            {"question": "A cake recipe needs 3/4 cup sugar. You're making 1/3 of the recipe. How much sugar?", "answer": "1/4 cup"},
-            {"question": "You have 5/8 yard of ribbon and use 1/4 yard. How much is left?", "answer": "3/8 yard"},
-            {"question": "A 6 1/2 foot board is cut into 1 1/4 foot pieces. How many pieces?", "answer": "5"},
-            {"question": "If 3/5 of students are girls and there are 30 students, how many girls?", "answer": "18"},
-            {"question": "You read 1/3 of a book on Monday and 1/4 on Tuesday. What fraction remains?", "answer": "5/12"}
+            {"question": "A cake recipe needs 3/4 cup sugar. You're making 1/3 of the recipe. How much sugar? = ", "answer": "1/4 cup"},
+            {"question": "You have 5/8 yard of ribbon and use 1/4 yard. How much is left? = ", "answer": "3/8 yard"},
+            {"question": "A 6 1/2 foot board is cut into 1 1/4 foot pieces. How many pieces? = ", "answer": "5"},
+            {"question": "If 3/5 of students are girls and there are 30 students, how many girls? = ", "answer": "18"},
+            {"question": "You read 1/3 of a book on Monday and 1/4 on Tuesday. What fraction remains? = ", "answer": "5/12"}
         ]
     }
 ]
@@ -337,16 +343,16 @@ algebra_practice = [
             "Mary is 10, John is 20"
         ],
         "practice": [
-            {"question": "A number plus 8 is 15. What's the number?", "answer": "7"},
-            {"question": "Twice a number minus 5 is 11. Find the number.", "answer": "8"},
-            {"question": "The sum of three consecutive integers is 36. Find them.", "answer": "11,12,13"},
-            {"question": "A rectangle's length is 3 more than width. Perimeter is 26. Find dimensions.", "answer": "5,8"},
-            {"question": "Sara is twice as old as Joe. 5 years ago she was 3 times his age. Find current ages.", "answer": "20,10"}
+            {"question": "A number plus 8 is 15. What's the number? = ", "answer": "7"},
+            {"question": "Twice a number minus 5 is 11. Find the number. = ", "answer": "8"},
+            {"question": "The sum of three consecutive integers is 36. Find them. = ", "answer": "11,12,13"},
+            {"question": "A rectangle's length is 3 more than width. Perimeter is 26. Find dimensions. = ", "answer": "5,8"},
+            {"question": "Sara is twice as old as Joe. 5 years ago she was 3 times his age. Find current ages. = ", "answer": "20,10"}
         ]
     }
 ]
 
-# Practice Hub buttons
+# Practice Hub buttons - adjusted positions
 practice_hub_buttons = [
     {"rect": pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 - 60, 400, 60), "text": "Fractions Practice", "target": "fractions_practice"},
     {"rect": pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 + 20, 400, 60), "text": "Algebra Practice", "target": "algebra_practice"},
@@ -563,7 +569,7 @@ def draw_practice_hub():
         screen.blit(txt, txt.get_rect(center=button["rect"].center))
 
 def draw_fractions_practice():
-    global show_theory
+    global show_theory, practice_inputs, practice_feedback
     current = fractions_practice[practice_question_index]
     
     if show_theory:
@@ -595,22 +601,36 @@ def draw_fractions_practice():
         screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 60)))
         
         y_pos = 120
-        for problem in current["practice"]:
+        for i, problem in enumerate(current["practice"]):
             # Draw question
-            question_text = math_font.render(problem["question"], True, WHITE)
+            question_text = practice_font.render(problem["question"], True, WHITE)
             screen.blit(question_text, (100, y_pos))
             
-            # Draw answer (initially hidden, revealed on hover)
-            answer_text = math_font.render(f"Answer: {problem['answer']}", True, GREEN)
-            answer_rect = pygame.Rect(600, y_pos, answer_text.get_width(), answer_text.get_height())
+            # Create input box if it doesn't exist
+            if i not in practice_inputs:
+                practice_inputs[i] = {"text": "", "active": False}
+                practice_feedback[i] = ""
             
-            # Check if mouse is hovering over this question
-            mouse_pos = pygame.mouse.get_pos()
-            if answer_rect.collidepoint(mouse_pos):
-                screen.blit(answer_text, (600, y_pos))
-            else:
-                hidden_answer = math_font.render("(hover to reveal)", True, (150, 150, 150))
-                screen.blit(hidden_answer, (600, y_pos))
+            # Draw input box
+            input_rect = pygame.Rect(600, y_pos, 200, 30)
+            color = LIGHT_BLUE if practice_inputs[i]["active"] else INPUT_BOX_COLOR
+            pygame.draw.rect(screen, color, input_rect, 0)
+            pygame.draw.rect(screen, WHITE, input_rect, 2)
+            
+            # Render input text
+            input_surface = practice_font.render(practice_inputs[i]["text"], True, (0, 0, 0))
+            screen.blit(input_surface, (input_rect.x + 5, input_rect.y + 5))
+            
+            # Check answer button
+            check_btn = pygame.Rect(820, y_pos, 100, 30)
+            pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if check_btn.collidepoint(pygame.mouse.get_pos()) else PRACTICE_BUTTON_COLOR, check_btn)
+            check_text = math_font.render("Check", True, WHITE)
+            screen.blit(check_text, (check_btn.centerx - check_text.get_width()//2, check_btn.centery - check_text.get_height()//2))
+            
+            # Show feedback if available
+            if practice_feedback[i]:
+                feedback_text = math_font.render(practice_feedback[i], True, GREEN if practice_feedback[i] == "Correct!" else RED)
+                screen.blit(feedback_text, (930, y_pos))
             
             y_pos += 50
     
@@ -618,7 +638,7 @@ def draw_fractions_practice():
     draw_practice_navigation_buttons()
 
 def draw_algebra_practice():
-    global show_theory
+    global show_theory, practice_inputs, practice_feedback
     current = algebra_practice[practice_question_index]
     
     if show_theory:
@@ -650,22 +670,36 @@ def draw_algebra_practice():
         screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 60)))
         
         y_pos = 120
-        for problem in current["practice"]:
+        for i, problem in enumerate(current["practice"]):
             # Draw question
-            question_text = math_font.render(problem["question"], True, WHITE)
+            question_text = practice_font.render(problem["question"], True, WHITE)
             screen.blit(question_text, (100, y_pos))
             
-            # Draw answer (initially hidden, revealed on hover)
-            answer_text = math_font.render(f"Answer: {problem['answer']}", True, GREEN)
-            answer_rect = pygame.Rect(600, y_pos, answer_text.get_width(), answer_text.get_height())
+            # Create input box if it doesn't exist
+            if i not in practice_inputs:
+                practice_inputs[i] = {"text": "", "active": False}
+                practice_feedback[i] = ""
             
-            # Check if mouse is hovering over this question
-            mouse_pos = pygame.mouse.get_pos()
-            if answer_rect.collidepoint(mouse_pos):
-                screen.blit(answer_text, (600, y_pos))
-            else:
-                hidden_answer = math_font.render("(hover to reveal)", True, (150, 150, 150))
-                screen.blit(hidden_answer, (600, y_pos))
+            # Draw input box
+            input_rect = pygame.Rect(600, y_pos, 200, 30)
+            color = LIGHT_BLUE if practice_inputs[i]["active"] else INPUT_BOX_COLOR
+            pygame.draw.rect(screen, color, input_rect, 0)
+            pygame.draw.rect(screen, WHITE, input_rect, 2)
+            
+            # Render input text
+            input_surface = practice_font.render(practice_inputs[i]["text"], True, (0, 0, 0))
+            screen.blit(input_surface, (input_rect.x + 5, input_rect.y + 5))
+            
+            # Check answer button
+            check_btn = pygame.Rect(820, y_pos, 100, 30)
+            pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if check_btn.collidepoint(pygame.mouse.get_pos()) else PRACTICE_BUTTON_COLOR, check_btn)
+            check_text = math_font.render("Check", True, WHITE)
+            screen.blit(check_text, (check_btn.centerx - check_text.get_width()//2, check_btn.centery - check_text.get_height()//2))
+            
+            # Show feedback if available
+            if practice_feedback[i]:
+                feedback_text = math_font.render(practice_feedback[i], True, GREEN if practice_feedback[i] == "Correct!" else RED)
+                screen.blit(feedback_text, (930, y_pos))
             
             y_pos += 50
     
@@ -1006,6 +1040,22 @@ def check_answer():
     feedback_timer = FPS * 2
     math_question_active = False
 
+def check_practice_answer(problem_index, user_answer, correct_answer):
+    global practice_feedback
+    
+    try:
+        if isinstance(correct_answer, str):
+            # For string answers (like "3/4" or "5")
+            correct = user_answer.strip().lower() == correct_answer.lower()
+        else:
+            # For numeric answers
+            user_num = float(Fraction(user_answer)) if "/" in user_answer else float(user_answer)
+            correct = abs(user_num - float(correct_answer)) < 0.001
+    except:
+        correct = False
+    
+    practice_feedback[problem_index] = "Correct!" if correct else "Incorrect"
+
 def reset_game():
     global lives, game_over, questions_answered, water_rings, obstacles
     global taniwha_rect, camera_x, current_level, level_complete
@@ -1026,7 +1076,7 @@ def main():
     global current_scene, user_input, answer_feedback, math_question_active
     global current_question, lives, game_over, boost_active, boost_timer, camera_x
     global practice_question_index, questions_answered, water_rings, obstacles
-    global show_theory, current_level, level_complete
+    global show_theory, current_level, level_complete, practice_inputs, practice_feedback
 
     running = True
     while running:
@@ -1044,6 +1094,8 @@ def main():
                         current_scene = "practice_hub"
                         practice_question_index = 0
                         show_theory = True
+                        practice_inputs = {}
+                        practice_feedback = {}
 
                 elif current_scene == "practice_hub":
                     mouse_pos = pygame.mouse.get_pos()
@@ -1052,9 +1104,13 @@ def main():
                             current_scene = button["target"]
                             practice_question_index = 0
                             show_theory = True
+                            practice_inputs = {}
+                            practice_feedback = {}
 
                 elif current_scene in ["fractions_practice", "algebra_practice"]:
                     mouse_pos = pygame.mouse.get_pos()
+                    
+                    # Check navigation buttons first
                     back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 150, 60)
                     next_btn = pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 100, 150, 60)
                     menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 100, 200, 60)
@@ -1062,14 +1118,39 @@ def main():
                     
                     if back_btn.collidepoint(mouse_pos):
                         practice_question_index = max(0, practice_question_index - 1)
+                        practice_inputs = {}
+                        practice_feedback = {}
                     elif next_btn.collidepoint(mouse_pos):
-                        max_index = len(fractions_practice)-1 if current_scene == "fractions_practice" else len(algebra_practice)-1
+                        current_practice = fractions_practice if current_scene == "fractions_practice" else algebra_practice
+                        max_index = len(current_practice)-1
                         if practice_question_index < max_index:
                             practice_question_index = min(max_index, practice_question_index + 1)
+                            practice_inputs = {}
+                            practice_feedback = {}
                     elif menu_btn.collidepoint(mouse_pos):
                         current_scene = "menu"
                     elif toggle_btn.collidepoint(mouse_pos):
                         show_theory = not show_theory
+                    elif not show_theory:
+                        # Check for input box clicks
+                        current = fractions_practice if current_scene == "fractions_practice" else algebra_practice
+                        current = current[practice_question_index]
+                        
+                        y_pos = 120
+                        for i in range(len(current["practice"])):
+                            input_rect = pygame.Rect(600, y_pos, 200, 30)
+                            check_btn = pygame.Rect(820, y_pos, 100, 30)
+                            
+                            if input_rect.collidepoint(mouse_pos):
+                                # Activate this input box
+                                for j in practice_inputs:
+                                    practice_inputs[j]["active"] = False
+                                practice_inputs[i]["active"] = True
+                            elif check_btn.collidepoint(mouse_pos):
+                                # Check this answer
+                                if i in practice_inputs and practice_inputs[i]["text"]:
+                                    check_practice_answer(i, practice_inputs[i]["text"], current["practice"][i]["answer"])
+                            y_pos += 50
 
                 elif game_over:
                     yes_btn, no_btn = draw_game_over()
@@ -1091,13 +1172,28 @@ def main():
                         current_scene = "menu"
                         level_complete = False
 
-            elif event.type == pygame.KEYDOWN and current_scene == "level1" and math_question_active:
-                if event.key == pygame.K_RETURN:
-                    check_answer()
-                elif event.key == pygame.K_BACKSPACE:
-                    user_input = user_input[:-1]
-                elif event.unicode.isdigit() or event.unicode in ["/", ".", "-"]:
-                    user_input += event.unicode
+            elif event.type == pygame.KEYDOWN:
+                if current_scene == "level1" and math_question_active:
+                    if event.key == pygame.K_RETURN:
+                        check_answer()
+                    elif event.key == pygame.K_BACKSPACE:
+                        user_input = user_input[:-1]
+                    elif event.unicode.isdigit() or event.unicode in ["/", ".", "-"]:
+                        user_input += event.unicode
+                elif current_scene in ["fractions_practice", "algebra_practice"] and not show_theory:
+                    # Handle practice problem input
+                    for i in practice_inputs:
+                        if practice_inputs[i]["active"]:
+                            if event.key == pygame.K_RETURN:
+                                current = fractions_practice if current_scene == "fractions_practice" else algebra_practice
+                                current = current[practice_question_index]
+                                if i < len(current["practice"]):
+                                    check_practice_answer(i, practice_inputs[i]["text"], current["practice"][i]["answer"])
+                            elif event.key == pygame.K_BACKSPACE:
+                                practice_inputs[i]["text"] = practice_inputs[i]["text"][:-1]
+                            elif event.unicode.isdigit() or event.unicode in ["/", ".", "-", " "]:
+                                practice_inputs[i]["text"] += event.unicode
+                            break
 
         keys = pygame.key.get_pressed()
         if current_scene == "menu":
