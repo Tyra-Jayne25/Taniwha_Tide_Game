@@ -242,7 +242,7 @@ def draw_practice_hub():
 def draw_fractions_practice():
     global show_theory, practice_inputs, practice_feedback, practice_answers_shown
     current = fractions_practice[practice_question_index]
-    
+
     if show_theory:
         screen.fill(THEORY_BACKGROUND)
         title = title_font.render("Fractions Practice", True, WHITE)
