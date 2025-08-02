@@ -724,6 +724,7 @@ def draw_game_over():
     pygame.draw.rect(screen, RED if no_btn.collidepoint(mouse_pos) else (200, 0, 0), no_btn)
     
     yes_txt = button_font.render("Yes", True, WHITE)
+    no_txt = button_font.render("No", True, WHITE)
     screen.blit(yes_txt, (yes_btn.centerx - yes_txt.get_width()//2, yes_btn.centery - yes_txt.get_height()//2))
     screen.blit(no_txt, (no_btn.centerx - no_txt.get_width()//2, no_btn.centery - no_txt.get_height()//2))
     
@@ -751,6 +752,7 @@ def draw_level_complete():
     pygame.draw.rect(screen, RED if no_btn.collidepoint(mouse_pos) else (200, 0, 0), no_btn)
     
     yes_txt = button_font.render("Yes", True, WHITE)
+    no_txt = button_font.render("No", True, WHITE)
     screen.blit(yes_txt, (yes_btn.centerx - yes_txt.get_width()//2, yes_btn.centery - yes_txt.get_height()//2))
     screen.blit(no_txt, (no_btn.centerx - no_txt.get_width()//2, no_btn.centery - no_txt.get_height()//2))
     
