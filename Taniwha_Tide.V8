@@ -615,7 +615,7 @@ def draw_fractions_practice():
         title = title_font.render("Fractions Practice Problems", True, WHITE)
         screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 40)))
         
-        y_pos = 80
+        y_pos = 100  # Increased starting position
         max_y = WINDOW_HEIGHT - 160  # Leave space for buttons
         
         for i, problem in enumerate(current["practice"]):
@@ -632,8 +632,8 @@ def draw_fractions_practice():
                 practice_feedback[i] = ""
                 practice_answers_shown[i] = False
             
-            # Draw input box
-            input_rect = pygame.Rect(500, y_pos, 150, 25)
+            # Draw input box - moved further right (from 500 to 550)
+            input_rect = pygame.Rect(550, y_pos, 150, 25)
             color = LIGHT_BLUE if practice_inputs[i]["active"] else INPUT_BOX_COLOR
             pygame.draw.rect(screen, color, input_rect, 0)
             pygame.draw.rect(screen, WHITE, input_rect, 2)
@@ -642,24 +642,25 @@ def draw_fractions_practice():
             input_surface = practice_font.render(practice_inputs[i]["text"], True, (0, 0, 0))
             screen.blit(input_surface, (input_rect.x + 5, input_rect.y + 5))
             
-            # Check answer button
-            check_btn = pygame.Rect(670, y_pos, 80, 25)
+            # Check answer button - moved further right (from 670 to 720)
+            check_btn = pygame.Rect(720, y_pos, 80, 25)
             pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if check_btn.collidepoint(pygame.mouse.get_pos()) else PRACTICE_BUTTON_COLOR, check_btn)
             check_text = math_font.render("Check", True, WHITE)
             screen.blit(check_text, (check_btn.centerx - check_text.get_width()//2, check_btn.centery - check_text.get_height()//2))
             
-            # Show feedback if available
+            # Show feedback if available - moved further right (from 760 to 810)
             if practice_feedback[i]:
                 feedback_text = math_font.render(practice_feedback[i], True, GREEN if practice_feedback[i] == "Correct!" else RED)
-                screen.blit(feedback_text, (760, y_pos))
+                screen.blit(feedback_text, (810, y_pos))
                 
                 # Show correct answer if wrong and not already shown
                 if practice_feedback[i] != "Correct!" and not practice_answers_shown[i]:
                     answer_text = math_font.render(f"Answer: {problem['answer']}", True, YELLOW)
-                    screen.blit(answer_text, (500, y_pos + 30))
+                    screen.blit(answer_text, (550, y_pos + 30))
                     practice_answers_shown[i] = True
             
-            y_pos += 60 if practice_feedback.get(i) != "Correct!" and practice_feedback.get(i) else 40
+            # Increased vertical spacing between questions
+            y_pos += 70 if practice_feedback.get(i) and practice_feedback[i] != "Correct!" else 50
     
     # Navigation buttons
     draw_practice_navigation_buttons()
@@ -710,7 +711,7 @@ def draw_algebra_practice():
         title = title_font.render("Algebra Practice Problems", True, WHITE)
         screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 40)))
         
-        y_pos = 80
+        y_pos = 100  # Increased starting position
         max_y = WINDOW_HEIGHT - 160  # Leave space for buttons
         
         for i, problem in enumerate(current["practice"]):
@@ -727,8 +728,8 @@ def draw_algebra_practice():
                 practice_feedback[i] = ""
                 practice_answers_shown[i] = False
             
-            # Draw input box
-            input_rect = pygame.Rect(500, y_pos, 150, 25)
+            # Draw input box - moved further right (from 500 to 550)
+            input_rect = pygame.Rect(550, y_pos, 150, 25)
             color = LIGHT_BLUE if practice_inputs[i]["active"] else INPUT_BOX_COLOR
             pygame.draw.rect(screen, color, input_rect, 0)
             pygame.draw.rect(screen, WHITE, input_rect, 2)
@@ -737,24 +738,25 @@ def draw_algebra_practice():
             input_surface = practice_font.render(practice_inputs[i]["text"], True, (0, 0, 0))
             screen.blit(input_surface, (input_rect.x + 5, input_rect.y + 5))
             
-            # Check answer button
-            check_btn = pygame.Rect(670, y_pos, 80, 25)
+            # Check answer button - moved further right (from 670 to 720)
+            check_btn = pygame.Rect(720, y_pos, 80, 25)
             pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if check_btn.collidepoint(pygame.mouse.get_pos()) else PRACTICE_BUTTON_COLOR, check_btn)
             check_text = math_font.render("Check", True, WHITE)
             screen.blit(check_text, (check_btn.centerx - check_text.get_width()//2, check_btn.centery - check_text.get_height()//2))
             
-            # Show feedback if available
+            # Show feedback if available - moved further right (from 760 to 810)
             if practice_feedback[i]:
                 feedback_text = math_font.render(practice_feedback[i], True, GREEN if practice_feedback[i] == "Correct!" else RED)
-                screen.blit(feedback_text, (760, y_pos))
+                screen.blit(feedback_text, (810, y_pos))
                 
                 # Show correct answer if wrong and not already shown
                 if practice_feedback[i] != "Correct!" and not practice_answers_shown[i]:
                     answer_text = math_font.render(f"Answer: {problem['answer']}", True, YELLOW)
-                    screen.blit(answer_text, (500, y_pos + 30))
+                    screen.blit(answer_text, (550, y_pos + 30))
                     practice_answers_shown[i] = True
             
-            y_pos += 60 if practice_feedback.get(i) != "Correct!" and practice_feedback.get(i) else 40
+            # Increased vertical spacing between questions
+            y_pos += 70 if practice_feedback.get(i) and practice_feedback[i] != "Correct!" else 50
     
     # Navigation buttons
     draw_practice_navigation_buttons()
@@ -1090,8 +1092,7 @@ def check_answer():
         if lives <= 0:
             game_over = True
 
-    feedback_timer = FPS * 2
-    math_question_active = False
+    feedback_timer = FPS * 3  # Increased from 2 to 3 seconds
 
 def check_practice_answer(problem_index, user_answer, correct_answer):
     global practice_feedback, practice_answers_shown
@@ -1199,10 +1200,10 @@ def main():
                         current = fractions_practice if current_scene == "fractions_practice" else algebra_practice
                         current = current[practice_question_index]
                         
-                        y_pos = 80
+                        y_pos = 100
                         for i in range(len(current["practice"])):
-                            input_rect = pygame.Rect(500, y_pos, 150, 25)
-                            check_btn = pygame.Rect(670, y_pos, 80, 25)
+                            input_rect = pygame.Rect(550, y_pos, 150, 25)
+                            check_btn = pygame.Rect(720, y_pos, 80, 25)
                             
                             if input_rect.collidepoint(mouse_pos):
                                 # Activate this input box
@@ -1213,7 +1214,7 @@ def main():
                                 # Check this answer
                                 if i in practice_inputs and practice_inputs[i]["text"]:
                                     check_practice_answer(i, practice_inputs[i]["text"], current["practice"][i]["answer"])
-                            y_pos += 60 if practice_feedback.get(i) != "Correct!" and practice_feedback.get(i) else 40
+                            y_pos += 70 if practice_feedback.get(i) and practice_feedback[i] != "Correct!" else 50
 
                 elif game_over:
                     yes_btn, no_btn = draw_game_over()
