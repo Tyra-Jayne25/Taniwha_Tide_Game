@@ -116,13 +116,241 @@ practice_inputs = {}
 practice_feedback = {}
 practice_answers_shown = {}
 
-# Enhanced Practice Content (same as before, but we'll adjust display in the drawing functions)
+# Enhanced Practice Content
 fractions_practice = [
-    # ... (same fractions_practice content as before)
+    {
+        "theory": [
+            "FRACTIONS BASICS",
+            "A fraction represents a part of a whole.",
+            "Numerator (top number): how many parts we have",
+            "Denominator (bottom number): how many equal parts the whole is divided into",
+            "",
+            "Types of fractions:",
+            "- Proper: numerator < denominator (e.g., 3/5)",
+            "- Improper: numerator ≥ denominator (e.g., 7/2)",
+            "- Mixed: whole number + fraction (e.g., 2 1/3)",
+            "- Equivalent: different fractions that represent the same value (e.g., 1/2 = 2/4)"
+        ],
+        "examples": [
+            "Visual Representation:",
+            "1/2 = ████████████░░░░░░░░░░ (12 out of 24 squares shaded)",
+            "3/4 = ██████████████████░░░░ (18 out of 24 squares shaded)",
+            "",
+            "Converting between types:",
+            "Improper to mixed: 7/2 = 3 1/2 (7 ÷ 2 = 3 with remainder 1)",
+            "Mixed to improper: 2 1/3 = (2×3 + 1)/3 = 7/3"
+        ],
+        "practice": [
+            {"question": "What fraction of this shape is shaded? (███░░) = ", "answer": "3/5"},
+            {"question": "Convert 5/2 to a mixed number = ", "answer": "2 1/2"},
+            {"question": "Convert 3 1/4 to an improper fraction = ", "answer": "13/4"},
+            {"question": "Which is larger: 3/4 or 5/8? = ", "answer": "3/4"},
+            {"question": "Find an equivalent fraction to 2/3 with denominator 12 = ", "answer": "8/12"}
+        ]
+    },
+    {
+        "theory": [
+            "ADDING & SUBTRACTING FRACTIONS",
+            "1. Find a common denominator (LCM of denominators)",
+            "2. Convert each fraction to equivalent with common denominator",
+            "3. Add/subtract numerators, keep denominator same",
+            "4. Simplify if possible",
+            "",
+            "With mixed numbers:",
+            "1. Convert to improper fractions",
+            "2. Follow steps above",
+            "3. Convert back to mixed if needed"
+        ],
+        "examples": [
+            "Simple addition: 1/3 + 1/6 = 2/6 + 1/6 = 3/6 = 1/2",
+            "With different denominators: 3/4 + 2/5 = 15/20 + 8/20 = 23/20 = 1 3/20",
+            "Subtraction: 7/8 - 1/2 = 7/8 - 4/8 = 3/8",
+            "Mixed numbers: 2 1/3 + 1 1/2 = 7/3 + 3/2 = 14/6 + 9/6 = 23/6 = 3 5/6"
+        ],
+        "practice": [
+            {"question": "1/4 + 1/2 = ", "answer": "3/4"},
+            {"question": "2/3 - 1/6 = ", "answer": "1/2"},
+            {"question": "3/5 + 2/7 = ", "answer": "31/35"},
+            {"question": "1 1/2 + 2 1/4 = ", "answer": "3 3/4"},
+            {"question": "3 1/3 - 1 3/4 = ", "answer": "1 7/12"}
+        ]
+    },
+    {
+        "theory": [
+            "MULTIPLYING & DIVIDING FRACTIONS",
+            "Multiplying:",
+            "1. Multiply numerators together",
+            "2. Multiply denominators together",
+            "3. Simplify the result",
+            "",
+            "Dividing:",
+            "1. Flip the second fraction (reciprocal)",
+            "2. Multiply the fractions",
+            "3. Simplify the result",
+            "",
+            "With mixed numbers:",
+            "Convert to improper fractions first"
+        ],
+        "examples": [
+            "Multiplication: 2/3 × 3/4 = (2×3)/(3×4) = 6/12 = 1/2",
+            "Division: 2/3 ÷ 3/4 = 2/3 × 4/3 = 8/9",
+            "With whole numbers: 3 × 2/5 = 3/1 × 2/5 = 6/5 = 1 1/5",
+            "Mixed numbers: 1 1/2 × 2 1/3 = 3/2 × 7/3 = 21/6 = 3 3/6 = 3 1/2"
+        ],
+        "practice": [
+            {"question": "1/2 × 1/3 = ", "answer": "1/6"},
+            {"question": "3/4 ÷ 2/5 = ", "answer": "15/8 or 1 7/8"},
+            {"question": "5 × 2/3 = ", "answer": "10/3 or 3 1/3"},
+            {"question": "2 1/2 × 1 1/5 = ", "answer": "3"},
+            {"question": "3/4 ÷ 2 = ", "answer": "3/8"}
+        ]
+    },
+    {
+        "theory": [
+            "FRACTION WORD PROBLEMS",
+            "Key strategies:",
+            "1. Identify what the problem is asking",
+            "2. Determine which operation to use",
+            "3. Convert mixed numbers if needed",
+            "4. Perform the calculation",
+            "5. Simplify the answer",
+            "6. Check if the answer makes sense"
+        ],
+        "examples": [
+            "Problem: A recipe calls for 3/4 cup of flour. You want to make 1/2 of the recipe. How much flour do you need?",
+            "Solution: 1/2 × 3/4 = 3/8 cup",
+            "",
+            "Problem: You have 2 1/2 pizzas and want to divide them equally among 4 friends. How much pizza does each get?",
+            "Solution: 2 1/2 ÷ 4 = 5/2 ÷ 4 = 5/2 × 1/4 = 5/8 pizza each"
+        ],
+        "practice": [
+            {"question": "A cake recipe needs 3/4 cup sugar. You're making 1/3 of the recipe. How much sugar? = ", "answer": "1/4 cup"},
+            {"question": "You have 5/8 yard of ribbon and use 1/4 yard. How much is left? = ", "answer": "3/8 yard"},
+            {"question": "A 6 1/2 foot board is cut into 1 1/4 foot pieces. How many pieces? = ", "answer": "5"},
+            {"question": "If 3/5 of students are girls and there are 30 students, how many girls? = ", "answer": "18"},
+            {"question": "You read 1/3 of a book on Monday and 1/4 on Tuesday. What fraction remains? = ", "answer": "5/12"}
+        ]
+    }
 ]
 
 algebra_practice = [
-    # ... (same algebra_practice content as before)
+    {
+        "theory": [
+            "ALGEBRA BASICS",
+            "Algebra uses letters (variables) to represent unknown numbers.",
+            "The goal is to find the value of the variable that makes the equation true.",
+            "",
+            "Basic Rules:",
+            "1. Whatever you do to one side, do to the other",
+            "2. Use inverse operations to isolate the variable",
+            "3. Combine like terms when possible",
+            "",
+            "Key Concepts:",
+            "- Like terms: terms with the same variable (3x and 5x)",
+            "- Coefficient: number multiplying the variable (in 4x, 4 is coefficient)",
+            "- Constant: fixed number (no variable)"
+        ],
+        "examples": [
+            "Simple equation: x + 3 = 7 → x = 7 - 3 → x = 4",
+            "With multiplication: 2x = 10 → x = 10 ÷ 2 → x = 5",
+            "Combining like terms: 3x + 2x = 15 → 5x = 15 → x = 3",
+            "With subtraction: x - 5 = 2 → x = 2 + 5 → x = 7"
+        ],
+        "practice": [
+            {"question": "x + 5 = 12 → x = ", "answer": "7"},
+            {"question": "3x = 15 → x = ", "answer": "5"},
+            {"question": "x - 4 = 8 → x = ", "answer": "12"},
+            {"question": "x/3 = 4 → x = ", "answer": "12"},
+            {"question": "2x + 3x = 20 → x = ", "answer": "4"}
+        ]
+    },
+    {
+        "theory": [
+            "SOLVING MULTI-STEP EQUATIONS",
+            "Steps to solve:",
+            "1. Simplify both sides (distribute, combine like terms)",
+            "2. Move variable terms to one side, constants to other",
+            "3. Isolate the variable",
+            "4. Check your solution",
+            "",
+            "Common techniques:",
+            "- Distributive property: a(b + c) = ab + ac",
+            "- Collecting like terms",
+            "- Using inverse operations"
+        ],
+        "examples": [
+            "Example: 3x + 2 = 11 → 3x = 11 - 2 → 3x = 9 → x = 3",
+            "With distribution: 2(x + 3) = 10 → 2x + 6 = 10 → 2x = 4 → x = 2",
+            "Variables on both sides: 5x - 3 = 2x + 9 → 3x = 12 → x = 4",
+            "Multiple steps: 4(x - 2) + 3 = 15 → 4x - 8 + 3 = 15 → 4x - 5 = 15 → 4x = 20 → x = 5"
+        ],
+        "practice": [
+            {"question": "2x + 5 = 17 → x = ", "answer": "6"},
+            {"question": "3(x - 2) = 12 → x = ", "answer": "6"},
+            {"question": "4x + 3 = 2x + 11 → x = ", "answer": "4"},
+            {"question": "5 - 2x = 11 → x = ", "answer": "-3"},
+            {"question": "2(3x + 1) = 14 → x = ", "answer": "2"}
+        ]
+    },
+    {
+        "theory": [
+            "SOLVING EQUATIONS WITH FRACTIONS",
+            "Methods:",
+            "1. Eliminate fractions by multiplying both sides by LCD",
+            "2. Cross-multiplication for proportions",
+            "3. Treat fractions carefully when moving terms",
+            "",
+            "Remember:",
+            "- LCD = Least Common Denominator",
+            "- When dividing fractions, multiply by reciprocal",
+            "- Simplify fractions when possible"
+        ],
+        "examples": [
+            "With fraction coefficients: 1/2x = 8 → x = 8 × 2 → x = 16",
+            "Multiple fractions: x/3 + 1/2 = 5/6 → LCD=6 → 2x + 3 = 5 → 2x = 2 → x = 1",
+            "Proportion: 3/4 = x/12 → 3×12 = 4x → 36 = 4x → x = 9",
+            "Complex: (x + 1)/2 = (x - 1)/3 → 3(x+1) = 2(x-1) → 3x+3 = 2x-2 → x = -5"
+        ],
+        "practice": [
+            {"question": "x/5 = 3 → x = ", "answer": "15"},
+            {"question": "2/3x = 8 → x = ", "answer": "12"},
+            {"question": "x/2 + 1 = 5 → x = ", "answer": "8"},
+            {"question": "3/4 = x/16 → x = ", "answer": "12"},
+            {"question": "(x + 2)/3 = (x - 1)/2 → x = ", "answer": "7"}
+        ]
+    },
+    {
+        "theory": [
+            "ALGEBRA WORD PROBLEMS",
+            "Problem-solving approach:",
+            "1. Read carefully and identify what's being asked",
+            "2. Define variables for unknowns",
+            "3. Translate words into equations",
+            "4. Solve the equation",
+            "5. Check if answer makes sense",
+            "",
+            "Common problem types:",
+            "- Number problems",
+            "- Age problems",
+            "- Distance-rate-time",
+            "- Geometry applications"
+        ],
+        "examples": [
+            "Number problem: If 5 is added to twice a number, the result is 17. Find the number.",
+            "Solution: Let x = number → 2x + 5 = 17 → 2x = 12 → x = 6",
+            "",
+            "Age problem: John is twice as old as Mary. In 5 years, the sum of their ages will be 40. Find current ages.",
+            "Solution: Let Mary's age = x, John's = 2x → (x+5)+(2x+5)=40 → 3x+10=40 → 3x=30 → x=10",
+            "Mary is 10, John is 20"
+        ],
+        "practice": [
+            {"question": "A number plus 8 is 15. What's the number? = ", "answer": "7"},
+            {"question": "Twice a number minus 5 is 11. Find the number. = ", "answer": "8"},
+            {"question": "The sum of three consecutive integers is 36. Find them. = ", "answer": "11,12,13"},
+            {"question": "A rectangle's length is 3 more than width. Perimeter is 26. Find dimensions. = ", "answer": "5,8"},
+            {"question": "Sara is twice as old as Joe. 5 years ago she was 3 times his age. Find current ages. = ", "answer": "20,10"}
+        ]
+    }
 ]
 
 # Practice Hub buttons - adjusted positions
@@ -139,48 +367,150 @@ water_ring_img = pygame.Surface((100, 100), pygame.SRCALPHA)
 portal_rect = pygame.Rect(level_width - 150, WINDOW_HEIGHT//2 - 75, 120, 150)
 portal_active = False
 
-# Generate water rings (same as before)
+# Generate water rings
 def generate_water_rings():
-    # Example implementation: generate 10 rings spaced along the level
     rings = []
-    for i in range(10):
-        rect = pygame.Rect(300 + i * 150, WINDOW_HEIGHT//2 + 50, 100, 100)
+    grid_cols = 4
+    grid_rows = 3
+    cell_width = (level_width - WINDOW_WIDTH//2) // grid_cols
+    cell_height = WINDOW_HEIGHT // grid_rows
+    
+    positions = []
+    for col in range(grid_cols):
+        for row in range(grid_rows):
+            x = WINDOW_WIDTH//2 + 100 + col * cell_width + random.randint(-100, 100)
+            y = 100 + row * cell_height + random.randint(-100, 100)
+            positions.append((x, y))
+    
+    random.shuffle(positions)
+    
+    questions = [
+        {"question": "1/2 + 1/4", "answer_frac": Fraction(3,4)},
+        {"question": "2/3 - 1/3", "answer_frac": Fraction(1,3)},
+        {"question": "3/4 ÷ 1/2", "answer_frac": Fraction(3,2)},
+        {"question": "1/5 × 2/3", "answer_frac": Fraction(2,15)},
+        {"question": "Simplify: 4/8", "answer_frac": Fraction(1,2)},
+        {"question": "Solve: x + 1/2 = 3/4", "answer_frac": Fraction(1,4)},
+        {"question": "2/7 + 3/7", "answer_frac": Fraction(5,7)},
+        {"question": "5/6 - 1/2", "answer_frac": Fraction(1,3)},
+        {"question": "3/5 × 2/3", "answer_frac": Fraction(2,5)},
+        {"question": "Solve: x - 1/3 = 1/6", "answer_frac": Fraction(1,2)}
+    ]
+    
+    for (x, y), q in zip(positions[:10], questions):
         rings.append({
-            "rect": rect,
-            "answered": False,
+            "rect": pygame.Rect(x, y, 100, 100),
+            "question": q["question"],
+            "answer_frac": q["answer_frac"],
             "triggered": False,
-            "animation_offset": random.uniform(0, 2 * math.pi)
+            "answered": False,
+            "animation_offset": random.uniform(0, 2*math.pi)
         })
     return rings
 
-# Generate algebra rings (same as before)
+# Generate algebra rings
 def generate_algebra_rings():
-    # Example implementation: generate 10 rings for algebra level
     rings = []
-    for i in range(10):
-        rect = pygame.Rect(300 + i * 150, WINDOW_HEIGHT//2 - 100, 100, 100)
+    grid_cols = 4
+    grid_rows = 3
+    cell_width = (level_width - WINDOW_WIDTH//2) // grid_cols
+    cell_height = WINDOW_HEIGHT // grid_rows
+    
+    positions = []
+    for col in range(grid_cols):
+        for row in range(grid_rows):
+            x = WINDOW_WIDTH//2 + 100 + col * cell_width + random.randint(-100, 100)
+            y = 100 + row * cell_height + random.randint(-100, 100)
+            positions.append((x, y))
+    
+    random.shuffle(positions)
+    
+    questions = [
+        {"question": "Solve: x + 5 = 9", "answer": 4},
+        {"question": "Solve: 2x = 10", "answer": 5},
+        {"question": "Solve: x - 3 = 7", "answer": 10},
+        {"question": "Solve: x/2 = 4", "answer": 8},
+        {"question": "Solve: 3x + 2 = 11", "answer": 3},
+        {"question": "Solve: 2x - 5 = 7", "answer": 6},
+        {"question": "Solve: x/3 + 1 = 4", "answer": 9},
+        {"question": "Solve: 4x - 3 = 13", "answer": 4},
+        {"question": "Solve: 2(x + 3) = 10", "answer": 2},
+        {"question": "Solve: 5x - 2 = 3x + 4", "answer": 3}
+    ]
+    
+    for (x, y), q in zip(positions[:10], questions):
         rings.append({
-            "rect": rect,
-            "answered": False,
+            "rect": pygame.Rect(x, y, 100, 100),
+            "question": q["question"],
+            "answer": q["answer"],
             "triggered": False,
-            "animation_offset": random.uniform(0, 2 * math.pi)
+            "answered": False,
+            "animation_offset": random.uniform(0, 2*math.pi)
         })
     return rings
 
 water_rings = generate_water_rings()
 algebra_rings = generate_algebra_rings()
 
-# Generate obstacles (same as before)
+# Generate obstacles
 def generate_obstacles():
-    # Example implementation: generate 8 obstacles spaced along the level
-    obs = []
-    for i in range(8):
-        kind = "net" if i % 2 == 0 else "jellyfish"
-        x = 400 + i * 200
-        y = WINDOW_HEIGHT//2 + (60 if kind == "net" else 120)
-        rect = pygame.Rect(x, y, 80, 80)
-        obs.append((kind, rect))
-    return obs
+    obstacles = []
+    OB_SIZE = 80
+    MIN_DIST_FROM_RING = 180
+    MIN_DIST_FROM_OBSTACLE = 140
+    MIN_DIST_FROM_PORTAL = 280
+    TARGET_COUNT = 15
+
+    for _ in range(TARGET_COUNT):
+        placed = False
+        attempts = 0
+        while not placed and attempts < 50:
+            x = random.randint(WINDOW_WIDTH//2 + 200, level_width - OB_SIZE)
+            y = random.randint(50, WINDOW_HEIGHT - 50 - OB_SIZE)
+            rect = pygame.Rect(x, y, OB_SIZE, OB_SIZE)
+
+            dist_to_spawn = ((rect.centerx - WINDOW_WIDTH//2)**2 + (rect.centery - (WINDOW_HEIGHT//2 + 120))**2)**0.5
+            if dist_to_spawn < 350:
+                attempts += 1
+                continue
+
+            too_close = False
+            rings = water_rings if current_level == 1 else algebra_rings
+            for ring in rings:
+                dx = rect.centerx - ring["rect"].centerx
+                dy = rect.centery - ring["rect"].centery
+                dist = (dx**2 + dy**2)**0.5
+                if dist < MIN_DIST_FROM_RING:
+                    too_close = True
+                    break
+            if too_close:
+                attempts += 1
+                continue
+
+            dx = rect.centerx - portal_rect.centerx
+            dy = rect.centery - portal_rect.centery
+            dist = (dx**2 + dy**2)**0.5
+            if dist < MIN_DIST_FROM_PORTAL:
+                attempts += 1
+                continue
+
+            overlap = False
+            for _, o_rect in obstacles:
+                dx = rect.centerx - o_rect.centerx
+                dy = rect.centery - o_rect.centery
+                dist = (dx**2 + dy**2)**0.5
+                if dist < MIN_DIST_FROM_OBSTACLE:
+                    overlap = True
+                    break
+            if overlap:
+                attempts += 1
+                continue
+
+            kind = random.choice(["net", "jelly"])
+            obstacles.append((kind, rect))
+            placed = True
+
+    return obstacles
 
 obstacles = generate_obstacles()
 
@@ -240,9 +570,16 @@ def draw_practice_hub():
         screen.blit(txt, txt.get_rect(center=button["rect"].center))
 
 def draw_fractions_practice():
-    global show_theory, practice_inputs, practice_feedback, practice_answers_shown
+    global show_theory, practice_inputs, practice_feedback, practice_answers_shown, practice_question_index
+    
+    # Ensure practice_question_index is within bounds
+    if practice_question_index >= len(fractions_practice):
+        practice_question_index = len(fractions_practice) - 1
+    if practice_question_index < 0:
+        practice_question_index = 0
+    
     current = fractions_practice[practice_question_index]
-
+    
     if show_theory:
         screen.fill(THEORY_BACKGROUND)
         title = title_font.render("Fractions Practice", True, WHITE)
@@ -322,13 +659,20 @@ def draw_fractions_practice():
                     screen.blit(answer_text, (500, y_pos + 30))
                     practice_answers_shown[i] = True
             
-            y_pos += 60 if practice_feedback[i] != "Correct!" and practice_feedback[i] else 40
+            y_pos += 60 if practice_feedback.get(i) != "Correct!" and practice_feedback.get(i) else 40
     
     # Navigation buttons
     draw_practice_navigation_buttons()
 
 def draw_algebra_practice():
-    global show_theory, practice_inputs, practice_feedback, practice_answers_shown
+    global show_theory, practice_inputs, practice_feedback, practice_answers_shown, practice_question_index
+    
+    # Ensure practice_question_index is within bounds
+    if practice_question_index >= len(algebra_practice):
+        practice_question_index = len(algebra_practice) - 1
+    if practice_question_index < 0:
+        practice_question_index = 0
+    
     current = algebra_practice[practice_question_index]
     
     if show_theory:
@@ -410,7 +754,7 @@ def draw_algebra_practice():
                     screen.blit(answer_text, (500, y_pos + 30))
                     practice_answers_shown[i] = True
             
-            y_pos += 60 if practice_feedback[i] != "Correct!" and practice_feedback[i] else 40
+            y_pos += 60 if practice_feedback.get(i) != "Correct!" and practice_feedback.get(i) else 40
     
     # Navigation buttons
     draw_practice_navigation_buttons()
@@ -628,12 +972,12 @@ def draw_level():
     if current_level == 1:
         draw_portal()
 
-# Game logic functions (same as before)
+# Game logic functions
 def handle_movement(keys):
     global camera_x, boost_timer, boost_active, current_scene, current_level, questions_answered
-    global obstacles, water_rings, algebra_rings, portal_active
+    global obstacles, water_rings, algebra_rings, portal_active, level_complete
     
-    if math_question_active:
+    if math_question_active or game_over or level_complete:
         return
     
     speed = taniwha_speed + 3 if boost_active else taniwha_speed
@@ -660,6 +1004,8 @@ def handle_movement(keys):
             taniwha_rect.y = WINDOW_HEIGHT//2
             camera_x = 0
             obstacles = generate_obstacles()
+    elif current_level == 2 and questions_answered >= total_questions:
+        level_complete = True
 
     left_bound = WINDOW_WIDTH * 0.3
     right_bound = WINDOW_WIDTH * 0.7
@@ -694,10 +1040,10 @@ def check_ring_triggers():
             break
 
 def check_obstacle_collision():
-  global lives, game_over, hurt_timer
-  if math_question_active:
+    global lives, game_over, hurt_timer
+    if math_question_active:
         return
-  for kind, rect in obstacles:
+    for kind, rect in obstacles:
         r = rect.move(-camera_x, 0)
         if taniwha_rect.colliderect(r):
             lives -= 1
@@ -708,20 +1054,20 @@ def check_obstacle_collision():
             break
 
 def check_answer():
- global answer_feedback, feedback_timer, math_question_active, questions_answered
- global boost_active, boost_timer, lives, game_over, hurt_timer
+    global answer_feedback, feedback_timer, math_question_active, questions_answered
+    global boost_active, boost_timer, lives, game_over, hurt_timer
     
-if current_question:
+    if current_question:
         current_question["answered"] = True
         
-try:
+    try:
         if current_level == 1:
             ans_frac = Fraction(user_input)
             correct = ans_frac == current_question["answer_frac"]
         else:
             ans_num = float(user_input)
             correct = abs(ans_num - current_question["answer"]) < 0.001
-except:
+    except:
         try:
             if current_level == 1:
                 ans_frac = Fraction(float(user_input)).limit_denominator()
@@ -732,20 +1078,20 @@ except:
         except:
             correct = False
 
-if correct:
+    if correct:
         answer_feedback = "Correct!"
         boost_active = True
         boost_timer = boost_duration
         questions_answered += 1
-else:
+    else:
         answer_feedback = "Incorrect!"
         lives -= 1
         hurt_timer = HURT_DURATION
         if lives <= 0:
             game_over = True
 
-feedback_timer = FPS * 2
-math_question_active = False
+    feedback_timer = FPS * 2
+    math_question_active = False
 
 def check_practice_answer(problem_index, user_answer, correct_answer):
     global practice_feedback, practice_answers_shown
