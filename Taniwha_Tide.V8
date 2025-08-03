@@ -46,8 +46,8 @@ button_font = pygame.font.SysFont("Arial", 36)
 health_font = pygame.font.SysFont("Arial", 28)
 math_font = pygame.font.SysFont("Arial", 24)
 question_font = pygame.font.SysFont("Arial", 32, bold=True)
-theory_font = pygame.font.SysFont("Arial", 22)  # Slightly smaller for better fit
-practice_font = pygame.font.SysFont("Arial", 24)
+theory_font = pygame.font.SysFont("Arial", 20)  # Made smaller to prevent overlap
+practice_font = pygame.font.SysFont("Arial", 22)  # Made smaller to prevent overlap
 
 # Game objects
 start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60)
@@ -954,30 +954,21 @@ def check_answer():
         
     try:
         if current_level == 1:
-            # Try to parse as fraction first
-            if "/" in user_input:
-                parts = user_input.split("/")
-                if len(parts) == 2:
-                    numerator = int(parts[0])
-                    denominator = int(parts[1])
-                    ans_frac = Fraction(numerator, denominator)
-                    correct = ans_frac == current_question["answer_frac"]
-                else:
-                    correct = False
-            else:
-                # Try to parse as decimal
-                try:
-                    decimal_value = float(user_input)
-                    ans_frac = Fraction(decimal_value).limit_denominator()
-                    correct = ans_frac == current_question["answer_frac"]
-                except:
-                    correct = False
+            ans_frac = Fraction(user_input)
+            correct = ans_frac == current_question["answer_frac"]
         else:
-            # For algebra problems
             ans_num = float(user_input)
             correct = abs(ans_num - current_question["answer"]) < 0.001
     except:
-        correct = False
+        try:
+            if current_level == 1:
+                ans_frac = Fraction(float(user_input)).limit_denominator()
+                correct = ans_frac == current_question["answer_frac"]
+            else:
+                ans_num = float(user_input)
+                correct = abs(ans_num - current_question["answer"]) < 0.001
+        except:
+            correct = False
 
     if correct:
         answer_feedback = "Correct!"
@@ -1004,20 +995,8 @@ def check_practice_answer(problem_index, user_answer, correct_answer):
             correct = user_answer.strip().lower() == correct_answer.lower()
         else:
             # For numeric answers
-            if "/" in user_answer:
-                # Try to parse as fraction
-                parts = user_answer.split("/")
-                if len(parts) == 2:
-                    numerator = int(parts[0])
-                    denominator = int(parts[1])
-                    user_num = Fraction(numerator, denominator)
-                    correct = user_num == Fraction(correct_answer)
-                else:
-                    correct = False
-            else:
-                # Try to parse as decimal
-                user_num = float(user_answer)
-                correct = abs(user_num - float(correct_answer)) < 0.001
+            user_num = float(Fraction(user_answer)) if "/" in user_answer else float(user_answer)
+            correct = abs(user_num - float(correct_answer)) < 0.001
     except:
         correct = False
     
