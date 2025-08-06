@@ -59,7 +59,7 @@ practice_button = pygame.Rect(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT//2 + 50, 80, 
 try: 
     # Taniwha image with hurt state 
     taniwha_img = pygame.image.load("Taniwha.png").convert_alpha() 
-    taniwha_img = pygame.transform.scale(taniwha_img, (300, 200)) 
+    taniwha_img = pygame.transform.scale(taniwha_img, (250, 250)) 
     taniwha_hurt_img = taniwha_img.copy() 
     hurt_overlay = pygame.Surface(taniwha_img.get_size(), pygame.SRCALPHA) 
     hurt_overlay.fill((255, 0, 0, 128)) 
@@ -72,7 +72,7 @@ try:
     background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT)) 
 except: 
     # Fallback if images not found 
-    taniwha_img = pygame.Surface((300, 200)) 
+    taniwha_img = pygame.Surface((250, 250)) 
     taniwha_img.fill(TANIWHA_GREEN) 
     taniwha_hurt_img = taniwha_img.copy() 
     hurt_overlay = pygame.Surface(taniwha_img.get_size()) 
