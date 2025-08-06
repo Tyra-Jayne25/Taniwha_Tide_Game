@@ -463,18 +463,35 @@ def draw_hut_button(rect, hover):
     screen.blit(label, (rect.x, rect.y + 70)) 
 
 def draw_menu(): 
-    screen.fill(WATER_BLUE) 
+    # Draw the ocean background
+    screen.blit(start_bg_image, (0, 0))
+    
+    # Draw the Taniwha background image (wrapped around the start button)
+    taniwha_bg_pos = (WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT//2 - 50)
+    screen.blit(taniwha_bg_image, taniwha_bg_pos)
+    
     title = title_font.render("Taniwha Tide", True, WHITE) 
     screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 150))) 
+    
     mouse_pos = pygame.mouse.get_pos() 
-    # Start Game button 
-    col = BUTTON_HOVER if start_button.collidepoint(mouse_pos) else BUTTON_COLOR 
-    pygame.draw.rect(screen, col, start_button) 
-    txt = button_font.render("Start Game", True, WHITE) 
-    screen.blit(txt, txt.get_rect(center=start_button.center)) 
-    # Practice Hub hut button 
-    hover = practice_button.collidepoint(mouse_pos) 
-    draw_hut_button(practice_button, hover) 
+    
+    # Draw start button with image
+    hover = start_button.collidepoint(mouse_pos)
+    if hover:
+        # Slightly enlarge button when hovered
+        hover_img = pygame.transform.scale(start_button_img, (210, 63))
+        screen.blit(hover_img, (start_button.x-5, start_button.y-2))
+    else:
+        screen.blit(start_button_img, start_button)
+    
+    # Draw practice button with image
+    hover = practice_button.collidepoint(mouse_pos)
+    if hover:
+        # Slightly enlarge button when hovered
+        hover_img = pygame.transform.scale(practice_button_img, (85, 85))
+        screen.blit(hover_img, (practice_button.x-3, practice_button.y-3))
+    else:
+        screen.blit(practice_button_img, practice_button)
 
 def draw_practice_hub(): 
     screen.fill(HUB_BACKGROUND) 
@@ -759,11 +776,13 @@ def draw_portal():
     portal_screen_rect = portal_rect.move(-camera_x, 0) 
     all_answered = questions_answered >= total_questions 
     portal_active = all_answered 
+    
+    # Draw portal image instead of ellipse
+    screen.blit(portal_image, portal_screen_rect)
+    
     if all_answered: 
-        pygame.draw.ellipse(screen, YELLOW, portal_screen_rect, 5) 
         label = math_font.render("NEXT LEVEL!", True, YELLOW) 
     else: 
-        pygame.draw.ellipse(screen, PURPLE, portal_screen_rect, 5) 
         label = math_font.render(f"{total_questions - questions_answered} left", True, PURPLE) 
     screen.blit(label, (portal_screen_rect.centerx - label.get_width()//2, portal_screen_rect.centery + 80)) 
 
@@ -897,9 +916,25 @@ def draw_level():
         screen.blit(background_image, (-rel_x, 0)) 
         screen.blit(background_image, (-rel_x + background_image.get_width(), 0)) 
     else: 
-        screen.fill((50, 50, 80)) 
-        algebra_label = title_font.render("ALGEBRA ZONE", True, WHITE) 
-        screen.blit(algebra_label, (WINDOW_WIDTH//2 - algebra_label.get_width()//2, 50)) 
+        # Draw algebra background
+        rel_x = camera_x % algebra_bg_image.get_width()
+        screen.blit(algebra_bg_image, (-rel_x, 0))
+        screen.blit(algebra_bg_image, (-rel_x + algebra_bg_image.get_width(), 0))
+    
+    draw_water_rings() 
+    for kind, rect in obstacles: 
+        r = rect.move(-camera_x, 0) 
+        if kind == "net": 
+            screen.blit(net_image, r) 
+        else: 
+            screen.blit(jellyfish_image, r) 
+    draw_taniwha() 
+    draw_health() 
+    handle_math_and_feedback() 
+    draw_help_button()
+    
+    if current_level == 1: 
+        draw_portal()
     
     draw_water_rings() 
     for kind, rect in obstacles: 
