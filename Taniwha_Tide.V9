@@ -951,17 +951,28 @@ def check_obstacle_collision():
     if math_question_active or show_help_popup: 
         return 
 
-    # Get taniwha's hitbox (smaller than the actual image for better gameplay) 
-    taniwha_hitbox = taniwha_rect.inflate(-50, -50) # Make hitbox smaller by 50 pixels on each side 
+    # Create a smaller hitbox for the Taniwha (40 pixels smaller on each side)
+    taniwha_hitbox = taniwha_rect.inflate(-40, -40)
+    
     for kind, rect in obstacles: 
         r = rect.move(-camera_x, 0) 
-        if taniwha_hitbox.colliderect(r): # Only collide if actually touching 
+        
+        # Create precise hitboxes for each obstacle type
+        if kind == "net":
+            # Net hitbox (smaller than the image)
+            obstacle_hitbox = r.inflate(-30, -30)
+        else:  # jellyfish
+            # Jellyfish hitbox (smaller than the image)
+            obstacle_hitbox = r.inflate(-40, -40)
+        
+        # Only check collision between the precise hitboxes
+        if taniwha_hitbox.colliderect(obstacle_hitbox):
             lives -= 1 
             hurt_timer = HURT_DURATION 
             obstacles.remove((kind, rect)) 
             if lives <= 0: 
                 game_over = True 
-            break 
+            break
 
 def check_answer(): 
     global answer_feedback, feedback_timer, math_question_active, questions_answered 
