@@ -1,1261 +1,1278 @@
-import pygame
-import sys
-import random
-import math
-from fractions import Fraction
+import pygame 
+import sys 
+import random 
+import math 
+from fractions import Fraction 
 
-# Initialize pygame
-pygame.init()
-pygame.font.init()
+# Initialize pygame 
+pygame.init() 
+pygame.font.init() 
 
-# Constants
-WINDOW_WIDTH = 1000
-WINDOW_HEIGHT = 720
-FPS = 60
+# Constants 
+WINDOW_WIDTH = 1000 
+WINDOW_HEIGHT = 720 
+FPS = 60 
 
-# Colors
-WHITE = (255, 255, 255)
-WATER_BLUE = (0, 105, 148)
-SEA_BLUE = (70, 130, 180)
-BUTTON_COLOR = (0, 150, 200)
-BUTTON_HOVER = (0, 180, 230)
-TANIWHA_GREEN = (34, 139, 34)
-RED = (255, 50, 50)
-GREEN = (0, 255, 0)
-BROWN = (139, 69, 19)
-PINK = (255, 182, 193)
-PURPLE = (128, 0, 128)
-YELLOW = (255, 255, 0)
-LIGHT_BLUE = (173, 216, 230)
-HUT_BROWN = (101, 67, 33)
-HUT_ROOF = (60, 40, 20)
-PRACTICE_BUTTON_COLOR = (100, 200, 100)
-PRACTICE_BUTTON_HOVER = (120, 220, 120)
-HUB_BACKGROUND = (50, 80, 120)
-THEORY_BACKGROUND = (60, 90, 130)
-INPUT_BOX_COLOR = (200, 200, 200)
+# Colors 
+WHITE = (255, 255, 255) 
+WATER_BLUE = (0, 105, 148) 
+SEA_BLUE = (70, 130, 180) 
+BUTTON_COLOR = (0, 150, 200) 
+BUTTON_HOVER = (0, 180, 230) 
+TANIWHA_GREEN = (34, 139, 34) 
+RED = (255, 50, 50) 
+GREEN = (0, 255, 0) 
+BROWN = (139, 69, 19) 
+PINK = (255, 182, 193) 
+PURPLE = (128, 0, 128) 
+YELLOW = (255, 255, 0) 
+LIGHT_BLUE = (173, 216, 230) 
+HUT_BROWN = (101, 67, 33) 
+HUT_ROOF = (60, 40, 20) 
+PRACTICE_BUTTON_COLOR = (100, 200, 100) 
+PRACTICE_BUTTON_HOVER = (120, 220, 120) 
+HUB_BACKGROUND = (50, 80, 120) 
+THEORY_BACKGROUND = (60, 90, 130) 
+INPUT_BOX_COLOR = (200, 200, 200) 
+DARK_NAVY = (0, 0, 100)
 
-# Create game window
-screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("Taniwha Tide")
-clock = pygame.time.Clock()
+# Create game window 
+screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) 
+pygame.display.set_caption("Taniwha Tide") 
+clock = pygame.time.Clock() 
 
-# Fonts
-title_font = pygame.font.SysFont("Arial", 72, bold=True)
-button_font = pygame.font.SysFont("Arial", 36)
-health_font = pygame.font.SysFont("Arial", 28)
-math_font = pygame.font.SysFont("Arial", 24)
-question_font = pygame.font.SysFont("Arial", 32, bold=True)
-theory_font = pygame.font.SysFont("Arial", 18)
-practice_font = pygame.font.SysFont("Arial", 20)
+# Fonts 
+title_font = pygame.font.SysFont("Arial", 72, bold=True) 
+button_font = pygame.font.SysFont("Arial", 36) 
+health_font = pygame.font.SysFont("Arial", 28) 
+math_font = pygame.font.SysFont("Arial", 24) 
+question_font = pygame.font.SysFont("Arial", 32, bold=True) 
+theory_font = pygame.font.SysFont("Arial", 18) 
+practice_font = pygame.font.SysFont("Arial", 20) 
+small_font = pygame.font.SysFont("Arial", 14)
 
-# Game objects
-start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60)
-practice_button = pygame.Rect(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT//2 + 50, 80, 80)
+# Game objects 
+start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60) 
+practice_button = pygame.Rect(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT//2 + 50, 80, 80) 
 
-# Load images
-try:
-    # Taniwha image with hurt state
-    taniwha_img = pygame.image.load("Taniwha.png").convert_alpha()
-    taniwha_img = pygame.transform.scale(taniwha_img, (300, 200))
-    taniwha_hurt_img = taniwha_img.copy()
-    hurt_overlay = pygame.Surface(taniwha_img.get_size(), pygame.SRCALPHA)
-    hurt_overlay.fill((255, 0, 0, 128))
-    taniwha_hurt_img.blit(hurt_overlay, (0, 0), special_flags=pygame.BLEND_MULT)
-    
-    net_image = pygame.image.load("net_obstacle.png").convert_alpha()
-    net_image = pygame.transform.scale(net_image, (90, 90))
-    jellyfish_image = pygame.image.load("jelly_obstacle.png").convert_alpha()
-    jellyfish_image = pygame.transform.scale(jellyfish_image, (90, 90))
-    background_image = pygame.image.load("Lvl1_water_background.png").convert()
-    background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
-except:
-    # Fallback if images not found
-    taniwha_img = pygame.Surface((300, 200))
-    taniwha_img.fill(TANIWHA_GREEN)
-    taniwha_hurt_img = taniwha_img.copy()
-    hurt_overlay = pygame.Surface(taniwha_img.get_size())
-    hurt_overlay.fill(RED)
-    taniwha_hurt_img.blit(hurt_overlay, (0, 0))
-    
-    net_image = pygame.Surface((90, 90))
-    net_image.fill(BROWN)
-    jellyfish_image = pygame.Surface((90, 90))
-    jellyfish_image.fill(PINK)
-    background_image = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-    background_image.fill(WATER_BLUE)
+# Load images 
+try: 
+    # Taniwha image with hurt state 
+    taniwha_img = pygame.image.load("Taniwha.png").convert_alpha() 
+    taniwha_img = pygame.transform.scale(taniwha_img, (300, 200)) 
+    taniwha_hurt_img = taniwha_img.copy() 
+    hurt_overlay = pygame.Surface(taniwha_img.get_size(), pygame.SRCALPHA) 
+    hurt_overlay.fill((255, 0, 0, 128)) 
+    taniwha_hurt_img.blit(hurt_overlay, (0, 0), special_flags=pygame.BLEND_MULT) 
+    net_image = pygame.image.load("net_obstacle.png").convert_alpha() 
+    net_image = pygame.transform.scale(net_image, (90, 90)) 
+    jellyfish_image = pygame.image.load("jelly_obstacle.png").convert_alpha() 
+    jellyfish_image = pygame.transform.scale(jellyfish_image, (90, 90)) 
+    background_image = pygame.image.load("Lvl1_water_background.png").convert() 
+    background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT)) 
+except: 
+    # Fallback if images not found 
+    taniwha_img = pygame.Surface((300, 200)) 
+    taniwha_img.fill(TANIWHA_GREEN) 
+    taniwha_hurt_img = taniwha_img.copy() 
+    hurt_overlay = pygame.Surface(taniwha_img.get_size()) 
+    hurt_overlay.fill(RED) 
+    taniwha_hurt_img.blit(hurt_overlay, (0, 0)) 
+    net_image = pygame.Surface((90, 90)) 
+    net_image.fill(BROWN) 
+    jellyfish_image = pygame.Surface((90, 90)) 
+    jellyfish_image.fill(PINK) 
+    background_image = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT)) 
+    background_image.fill(WATER_BLUE) 
 
-taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150))
-taniwha_speed = 5
-hurt_timer = 0
-HURT_DURATION = 30
+taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)) 
+taniwha_speed = 5 
+hurt_timer = 0 
+HURT_DURATION = 30 
 
-# Game state
-current_scene = "menu"  # Can be: menu, level1, practice_hub, fractions_practice, algebra_practice
-camera_x = 0
-lives = 5
-game_over = False
-user_input = ""
-answer_feedback = ""
-feedback_timer = 0
-math_question_active = False
-current_question = None
-boost_active = False
-boost_timer = 0
-boost_duration = 180
-current_level = 1
-questions_answered = 0
-total_questions = 10
-level_width = 2200
-practice_question_index = 0
-show_theory = True
-level_complete = False
+# Game state 
+current_scene = "menu" # Can be: menu, level1, practice_hub, fractions_practice, algebra_practice 
+camera_x = 0 
+lives = 5 
+game_over = False 
+user_input = "" 
+answer_feedback = "" 
+feedback_timer = 0 
+math_question_active = False 
+current_question = None 
+boost_active = False 
+boost_timer = 0 
+boost_duration = 180 
+current_level = 1 
+questions_answered = 0 
+total_questions = 10 
+level_width = 2200 
+practice_question_index = 0 
+show_theory = True 
+level_complete = False 
+game_complete = False
+show_help_popup = False
+help_popup_type = "fractions"  # or "algebra"
 
-# Practice input fields
-practice_inputs = {}
-practice_feedback = {}
-practice_answers_shown = {}
-feedback_display_time = 0
+# Help button
+help_button_rect = pygame.Rect(WINDOW_WIDTH - 40, 10, 30, 30)
 
-# Enhanced Practice Content
-fractions_practice = [
-    {
-        "theory": [
-            "FRACTIONS BASICS",
-            "A fraction represents a part of a whole.",
-            "Numerator (top number): how many parts we have",
-            "Denominator (bottom number): how many equal parts the whole is divided into",
-            "",
-            "Types of fractions:",
-            "- Proper: numerator < denominator (e.g., 3/5)",
-            "- Improper: numerator ≥ denominator (e.g., 7/2)",
-            "- Mixed: whole number + fraction (e.g., 2 1/3)",
-            "- Equivalent: different fractions that represent the same value (e.g., 1/2 = 2/4)"
-        ],
-        "examples": [
-            "Visual Representation:",
-            "1/2 = ████████████░░░░░░░░░░ (12 out of 24 squares shaded)",
-            "3/4 = ██████████████████░░░░ (18 out of 24 squares shaded)",
-            "",
-            "Converting between types:",
-            "Improper to mixed: 7/2 = 3 1/2 (7 ÷ 2 = 3 with remainder 1)",
-            "Mixed to improper: 2 1/3 = (2×3 + 1)/3 = 7/3"
-        ],
-        "practice": [
-            {"question": "What fraction of this shape is shaded? (███░░) = ", "answer": "3/5"},
-            {"question": "Convert 5/2 to a mixed number = ", "answer": "2 1/2"},
-            {"question": "Convert 3 1/4 to an improper fraction = ", "answer": "13/4"},
-            {"question": "Which is larger: 3/4 or 5/8? = ", "answer": "3/4"},
-            {"question": "Find an equivalent fraction to 2/3 with denominator 12 = ", "answer": "8/12"}
-        ]
-    },
-    {
-        "theory": [
-            "ADDING & SUBTRACTING FRACTIONS",
-            "1. Find a common denominator (LCM of denominators)",
-            "2. Convert each fraction to equivalent with common denominator",
-            "3. Add/subtract numerators, keep denominator same",
-            "4. Simplify if possible",
-            "",
-            "With mixed numbers:",
-            "1. Convert to improper fractions",
-            "2. Follow steps above",
-            "3. Convert back to mixed if needed"
-        ],
-        "examples": [
-            "Simple addition: 1/3 + 1/6 = 2/6 + 1/6 = 3/6 = 1/2",
-            "With different denominators: 3/4 + 2/5 = 15/20 + 8/20 = 23/20 = 1 3/20",
-            "Subtraction: 7/8 - 1/2 = 7/8 - 4/8 = 3/8",
-            "Mixed numbers: 2 1/3 + 1 1/2 = 7/3 + 3/2 = 14/6 + 9/6 = 23/6 = 3 5/6"
-        ],
-        "practice": [
-            {"question": "1/4 + 1/2 = ", "answer": "3/4"},
-            {"question": "2/3 - 1/6 = ", "answer": "1/2"},
-            {"question": "3/5 + 2/7 = ", "answer": "31/35"},
-            {"question": "1 1/2 + 2 1/4 = ", "answer": "3 3/4"},
-            {"question": "3 1/3 - 1 3/4 = ", "answer": "1 7/12"}
-        ]
-    }
-]
+# Practice input fields 
+practice_inputs = {} 
+practice_feedback = {} 
+practice_answers_shown = {} 
+feedback_display_time = 0 
 
-algebra_practice = [
-    {
-        "theory": [
-            "ALGEBRA BASICS",
-            "Algebra uses letters (variables) to represent unknown numbers.",
-            "The goal is to find the value of the variable that makes the equation true.",
-            "",
-            "Basic Rules:",
-            "1. Whatever you do to one side, do to the other",
-            "2. Use inverse operations to isolate the variable",
-            "3. Combine like terms when possible",
-            "",
-            "Key Concepts:",
-            "- Like terms: terms with the same variable (3x and 5x)",
-            "- Coefficient: number multiplying the variable (in 4x, 4 is coefficient)",
-            "- Constant: fixed number (no variable)"
-        ],
-        "examples": [
-            "Simple equation: x + 3 = 7 → x = 7 - 3 → x = 4",
-            "With multiplication: 2x = 10 → x = 10 ÷ 2 → x = 5",
-            "Combining like terms: 3x + 2x = 15 → 5x = 15 → x = 3",
-            "With subtraction: x - 5 = 2 → x = 2 + 5 → x = 7"
-        ],
-        "practice": [
-            {"question": "x + 5 = 12 → x = ", "answer": "7"},
-            {"question": "3x = 15 → x = ", "answer": "5"},
-            {"question": "x - 4 = 8 → x = ", "answer": "12"},
-            {"question": "x/3 = 4 → x = ", "answer": "12"},
-            {"question": "2x + 3x = 20 → x = ", "answer": "4"}
-        ]
-    },
-    {
-        "theory": [
-            "SOLVING MULTI-STEP EQUATIONS",
-            "Steps to solve:",
-            "1. Simplify both sides (distribute, combine like terms)",
-            "2. Move variable terms to one side, constants to other",
-            "3. Isolate the variable",
-            "4. Check your solution",
-            "",
-            "Common techniques:",
-            "- Distributive property: a(b + c) = ab + ac",
-            "- Collecting like terms",
-            "- Using inverse operations"
-        ],
-        "examples": [
-            "Example: 3x + 2 = 11 → 3x = 11 - 2 → 3x = 9 → x = 3",
-            "With distribution: 2(x + 3) = 10 → 2x + 6 = 10 → 2x = 4 → x = 2",
-            "Variables on both sides: 5x - 3 = 2x + 9 → 3x = 12 → x = 4",
-            "Multiple steps: 4(x - 2) + 3 = 15 → 4x - 8 + 3 = 15 → 4x - 5 = 15 → 4x = 20 → x = 5"
-        ],
-        "practice": [
-            {"question": "2x + 5 = 17 → x = ", "answer": "6"},
-            {"question": "3(x - 2) = 12 → x = ", "answer": "6"},
-            {"question": "4x + 3 = 2x + 11 → x = ", "answer": "4"},
-            {"question": "5 - 2x = 11 → x = ", "answer": "-3"},
-            {"question": "2(3x + 1) = 14 → x = ", "answer": "2"}
-        ]
-    }
-]
+# Enhanced Practice Content 
+fractions_practice = [ 
+    { 
+        "theory": [ 
+            "FRACTIONS BASICS", 
+            "A fraction represents a part of a whole.", 
+            "Numerator (top number): how many parts we have", 
+            "Denominator (bottom number): how many equal parts the whole is divided into", 
+            "", 
+            "Types of fractions:", 
+            "- Proper: numerator < denominator (e.g., 3/5)", 
+            "- Improper: numerator ≥ denominator (e.g., 7/2)", 
+            "- Mixed: whole number + fraction (e.g., 2 1/3)", 
+            "- Equivalent: different fractions that represent the same value (e.g., 1/2 = 2/4)" 
+        ], 
+        "examples": [ 
+            "Visual Representation:", 
+            "1/2 = ████████████░░░░░░░░░░ (12 out of 24 squares shaded)", 
+            "3/4 = ██████████████████░░░░ (18 out of 24 squares shaded)", 
+            "", 
+            "Converting between types:", 
+            "Improper to mixed: 7/2 = 3 1/2 (7 ÷ 2 = 3 with remainder 1)", 
+            "Mixed to improper: 2 1/3 = (2×3 + 1)/3 = 7/3" 
+        ], 
+        "practice": [ 
+            {"question": "What fraction of this shape is shaded? (███░░) = ", "answer": "3/5"}, 
+            {"question": "Convert 5/2 to a mixed number = ", "answer": "2 1/2"}, 
+            {"question": "Convert 3 1/4 to an improper fraction = ", "answer": "13/4"}, 
+            {"question": "Which is larger: 3/4 or 5/8? = ", "answer": "3/4"}, 
+            {"question": "Find an equivalent fraction to 2/3 with denominator 12 = ", "answer": "8/12"} 
+        ] 
+    }, 
+    { 
+        "theory": [ 
+            "ADDING & SUBTRACTING FRACTIONS", 
+            "1. Find a common denominator (LCM of denominators)", 
+            "2. Convert each fraction to equivalent with common denominator", 
+            "3. Add/subtract numerators, keep denominator same", 
+            "4. Simplify if possible", 
+            "", 
+            "With mixed numbers:", 
+            "1. Convert to improper fractions", 
+            "2. Follow steps above", 
+            "3. Convert back to mixed if needed" 
+        ], 
+        "examples": [ 
+            "Simple addition: 1/3 + 1/6 = 2/6 + 1/6 = 3/6 = 1/2", 
+            "With different denominators: 3/4 + 2/5 = 15/20 + 8/20 = 23/20 = 1 3/20", 
+            "Subtraction: 7/8 - 1/2 = 7/8 - 4/8 = 3/8", 
+            "Mixed numbers: 2 1/3 + 1 1/2 = 7/3 + 3/2 = 14/6 + 9/6 = 23/6 = 3 5/6" 
+        ], 
+        "practice": [ 
+            {"question": "1/4 + 1/2 = ", "answer": "3/4"}, 
+            {"question": "2/3 - 1/6 = ", "answer": "1/2"}, 
+            {"question": "3/5 + 2/7 = ", "answer": "31/35"}, 
+            {"question": "1 1/2 + 2 1/4 = ", "answer": "3 3/4"}, 
+            {"question": "3 1/3 - 1 3/4 = ", "answer": "1 7/12"} 
+        ] 
+    } 
+] 
 
-# Practice Hub buttons
-practice_hub_buttons = [
-    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 - 60, 400, 60), "text": "Fractions Practice", "target": "fractions_practice"},
-    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 + 20, 400, 60), "text": "Algebra Practice", "target": "algebra_practice"},
-    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 + 100, 400, 60), "text": "Back to Menu", "target": "menu"}
-]
+algebra_practice = [ 
+    { 
+        "theory": [ 
+            "ALGEBRA BASICS", 
+            "Algebra uses letters (variables) to represent unknown numbers.", 
+            "The goal is to find the value of the variable that makes the equation true.", 
+            "", 
+            "Basic Rules:", 
+            "1. Whatever you do to one side, do to the other", 
+            "2. Use inverse operations to isolate the variable", 
+            "3. Combine like terms when possible", 
+            "", 
+            "Key Concepts:", 
+            "- Like terms: terms with the same variable (3x and 5x)", 
+            "- Coefficient: number multiplying the variable (in 4x, 4 is coefficient)", 
+            "- Constant: fixed number (no variable)" 
+        ], 
+        "examples": [ 
+            "Simple equation: x + 3 = 7 → x = 7 - 3 → x = 4", 
+            "With multiplication: 2x = 10 → x = 10 ÷ 2 → x = 5", 
+            "Combining like terms: 3x + 2x = 15 → 5x = 15 → x = 3", 
+            "With subtraction: x - 5 = 2 → x = 2 + 5 → x = 7" 
+        ], 
+        "practice": [ 
+            {"question": "x + 5 = 12 → x = ", "answer": "7"}, 
+            {"question": "3x = 15 → x = ", "answer": "5"}, 
+            {"question": "x - 4 = 8 → x = ", "answer": "12"}, 
+            {"question": "x/3 = 4 → x = ", "answer": "12"}, 
+            {"question": "2x + 3x = 20 → x = ", "answer": "4"} 
+        ] 
+    }, 
+    { 
+        "theory": [ 
+            "SOLVING MULTI-STEP EQUATIONS", 
+            "Steps to solve:", 
+            "1. Simplify both sides (distribute, combine like terms)", 
+            "2. Move variable terms to one side, constants to other", 
+            "3. Isolate the variable", 
+            "4. Check your solution", 
+            "", 
+            "Common techniques:", 
+            "- Distributive property: a(b + c) = ab + ac", 
+            "- Collecting like terms", 
+            "- Using inverse operations" 
+        ], 
+        "examples": [ 
+            "Example: 3x + 2 = 11 → 3x = 11 - 2 → 3x = 9 → x = 3", 
+            "With distribution: 2(x + 3) = 10 → 2x + 6 = 10 → 2x = 4 → x = 2", 
+            "Variables on both sides: 5x - 3 = 2x + 9 → 3x = 12 → x = 4", 
+            "Multiple steps: 4(x - 2) + 3 = 15 → 4x - 8 + 3 = 15 → 4x - 5 = 15 → 4x = 20 → x = 5" 
+        ], 
+        "practice": [ 
+            {"question": "2x + 5 = 17 → x = ", "answer": "6"}, 
+            {"question": "3(x - 2) = 12 → x = ", "answer": "6"}, 
+            {"question": "4x + 3 = 2x + 11 → x = ", "answer": "4"}, 
+            {"question": "5 - 2x = 11 → x = ", "answer": "-3"}, 
+            {"question": "2(3x + 1) = 14 → x = ", "answer": "2"} 
+        ] 
+    } 
+] 
 
-# Create animated water ring surface
-water_ring_img = pygame.Surface((120, 120), pygame.SRCALPHA)
+# Practice Hub buttons 
+practice_hub_buttons = [ 
+    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 - 60, 400, 60), "text": "Fractions Practice", "target": "fractions_practice"}, 
+    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 + 20, 400, 60), "text": "Algebra Practice", "target": "algebra_practice"}, 
+    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 + 100, 400, 60), "text": "Back to Menu", "target": "menu"} 
+] 
 
-# Portal
-portal_rect = pygame.Rect(level_width - 150, WINDOW_HEIGHT//2 - 75, 120, 150)
-portal_active = False
+# Create animated water ring surface 
+water_ring_img = pygame.Surface((120, 120), pygame.SRCALPHA) 
 
-# Generate water rings
-def generate_water_rings():
-    rings = []
-    grid_cols = 4
-    grid_rows = 3
-    cell_width = (level_width - WINDOW_WIDTH//2) // grid_cols
-    cell_height = WINDOW_HEIGHT // grid_rows
-    
-    positions = []
-    for col in range(grid_cols):
-        for row in range(grid_rows):
-            x = WINDOW_WIDTH//2 + 100 + col * cell_width + random.randint(-100, 100)
-            y = 100 + row * cell_height + random.randint(-100, 100)
-            positions.append((x, y))
-    
-    random.shuffle(positions)
-    
-    questions = [
-        {"question": "1/2 + 1/4", "answer_frac": Fraction(3,4)},
-        {"question": "2/3 - 1/3", "answer_frac": Fraction(1,3)},
-        {"question": "3/4 ÷ 1/2", "answer_frac": Fraction(3,2)},
-        {"question": "1/5 × 2/3", "answer_frac": Fraction(2,15)},
-        {"question": "Simplify: 4/8", "answer_frac": Fraction(1,2)},
-        {"question": "Solve: x + 1/2 = 3/4", "answer_frac": Fraction(1,4)},
-        {"question": "2/7 + 3/7", "answer_frac": Fraction(5,7)},
-        {"question": "5/6 - 1/2", "answer_frac": Fraction(1,3)},
-        {"question": "3/5 × 2/3", "answer_frac": Fraction(2,5)},
-        {"question": "Solve: x - 1/3 = 1/6", "answer_frac": Fraction(1,2)}
-    ]
-    
-    for (x, y), q in zip(positions[:10], questions):
-        rings.append({
-            "rect": pygame.Rect(x, y, 120, 120),
-            "question": q["question"],
-            "answer_frac": q["answer_frac"],
-            "triggered": False,
-            "answered": False,
-            "incorrect": False,
-            "animation_offset": random.uniform(0, 2*math.pi)
-        })
-    return rings
+# Portal 
+portal_rect = pygame.Rect(level_width - 150, WINDOW_HEIGHT//2 - 75, 120, 150) 
+portal_active = False 
 
-# Generate algebra rings
-def generate_algebra_rings():
-    rings = []
-    grid_cols = 4
-    grid_rows = 3
-    cell_width = (level_width - WINDOW_WIDTH//2) // grid_cols
-    cell_height = WINDOW_HEIGHT // grid_rows
-    
-    positions = []
-    for col in range(grid_cols):
-        for row in range(grid_rows):
-            x = WINDOW_WIDTH//2 + 100 + col * cell_width + random.randint(-100, 100)
-            y = 100 + row * cell_height + random.randint(-100, 100)
-            positions.append((x, y))
-    
-    random.shuffle(positions)
-    
-    questions = [
-        {"question": "Solve: x + 5 = 9", "answer": 4},
-        {"question": "Solve: 2x = 10", "answer": 5},
-        {"question": "Solve: x - 3 = 7", "answer": 10},
-        {"question": "Solve: x/2 = 4", "answer": 8},
-        {"question": "Solve: 3x + 2 = 11", "answer": 3},
-        {"question": "Solve: 2x - 5 = 7", "answer": 6},
-        {"question": "Solve: x/3 + 1 = 4", "answer": 9},
-        {"question": "Solve: 4x - 3 = 13", "answer": 4},
-        {"question": "Solve: 2(x + 3) = 10", "answer": 2},
-        {"question": "Solve: 5x - 2 = 3x + 4", "answer": 3}
-    ]
-    
-    for (x, y), q in zip(positions[:10], questions):
-        rings.append({
-            "rect": pygame.Rect(x, y, 120, 120),
-            "question": q["question"],
-            "answer": q["answer"],
-            "triggered": False,
-            "answered": False,
-            "incorrect": False,
-            "animation_offset": random.uniform(0, 2*math.pi)
-        })
-    return rings
+# Generate water rings 
+def generate_water_rings(): 
+    rings = [] 
+    grid_cols = 4 
+    grid_rows = 3 
+    cell_width = (level_width - WINDOW_WIDTH//2) // grid_cols 
+    cell_height = WINDOW_HEIGHT // grid_rows 
+    positions = [] 
+    for col in range(grid_cols): 
+        for row in range(grid_rows): 
+            x = WINDOW_WIDTH//2 + 100 + col * cell_width + random.randint(-100, 100) 
+            y = 100 + row * cell_height + random.randint(-100, 100) 
+            positions.append((x, y)) 
+    random.shuffle(positions) 
+    questions = [ 
+        {"question": "1/2 + 1/4", "answer_frac": Fraction(3,4)}, 
+        {"question": "2/3 - 1/3", "answer_frac": Fraction(1,3)}, 
+        {"question": "3/4 ÷ 1/2", "answer_frac": Fraction(3,2)}, 
+        {"question": "1/5 × 2/3", "answer_frac": Fraction(2,15)}, 
+        {"question": "Simplify: 4/8", "answer_frac": Fraction(1,2)}, 
+        {"question": "Solve: x + 1/2 = 3/4", "answer_frac": Fraction(1,4)}, 
+        {"question": "2/7 + 3/7", "answer_frac": Fraction(5,7)}, 
+        {"question": "5/6 - 1/2", "answer_frac": Fraction(1,3)}, 
+        {"question": "3/5 × 2/3", "answer_frac": Fraction(2,5)}, 
+        {"question": "Solve: x - 1/3 = 1/6", "answer_frac": Fraction(1,2)} 
+    ] 
+    for (x, y), q in zip(positions[:10], questions): 
+        rings.append({ 
+            "rect": pygame.Rect(x, y, 120, 120), 
+            "question": q["question"], 
+            "answer_frac": q["answer_frac"], 
+            "triggered": False, 
+            "answered": False, 
+            "incorrect": False, 
+            "animation_offset": random.uniform(0, 2*math.pi) 
+        }) 
+    return rings 
 
-water_rings = generate_water_rings()
-algebra_rings = generate_algebra_rings()
+# Generate algebra rings 
+def generate_algebra_rings(): 
+    rings = [] 
+    grid_cols = 4 
+    grid_rows = 3 
+    cell_width = (level_width - WINDOW_WIDTH//2) // grid_cols 
+    cell_height = WINDOW_HEIGHT // grid_rows 
+    positions = [] 
+    for col in range(grid_cols): 
+        for row in range(grid_rows): 
+            x = WINDOW_WIDTH//2 + 100 + col * cell_width + random.randint(-100, 100) 
+            y = 100 + row * cell_height + random.randint(-100, 100) 
+            positions.append((x, y)) 
+    random.shuffle(positions) 
+    questions = [ 
+        {"question": "Solve: x + 5 = 9", "answer": 4}, 
+        {"question": "Solve: 2x = 10", "answer": 5}, 
+        {"question": "Solve: x - 3 = 7", "answer": 10}, 
+        {"question": "Solve: x/2 = 4", "answer": 8}, 
+        {"question": "Solve: 3x + 2 = 11", "answer": 3}, 
+        {"question": "Solve: 2x - 5 = 7", "answer": 6}, 
+        {"question": "Solve: x/3 + 1 = 4", "answer": 9}, 
+        {"question": "Solve: 4x - 3 = 13", "answer": 4}, 
+        {"question": "Solve: 2(x + 3) = 10", "answer": 2}, 
+        {"question": "Solve: 5x - 2 = 3x + 4", "answer": 3} 
+    ] 
+    for (x, y), q in zip(positions[:10], questions): 
+        rings.append({ 
+            "rect": pygame.Rect(x, y, 120, 120), 
+            "question": q["question"], 
+            "answer": q["answer"], 
+            "triggered": False, 
+            "answered": False, 
+            "incorrect": False, 
+            "animation_offset": random.uniform(0, 2*math.pi) 
+        }) 
+    return rings 
 
-# Generate obstacles
-def generate_obstacles():
-    obstacles = []
-    OB_SIZE = 90
-    MIN_DIST_FROM_RING = 200
-    MIN_DIST_FROM_OBSTACLE = 160
-    MIN_DIST_FROM_PORTAL = 300
-    TARGET_COUNT = 15
+water_rings = generate_water_rings() 
+algebra_rings = generate_algebra_rings() 
 
-    for _ in range(TARGET_COUNT):
-        placed = False
-        attempts = 0
-        while not placed and attempts < 50:
-            x = random.randint(WINDOW_WIDTH//2 + 200, level_width - OB_SIZE)
-            y = random.randint(50, WINDOW_HEIGHT - 50 - OB_SIZE)
-            rect = pygame.Rect(x, y, OB_SIZE, OB_SIZE)
+# Generate obstacles 
+def generate_obstacles(): 
+    obstacles = [] 
+    OB_SIZE = 90 
+    MIN_DIST_FROM_RING = 200 
+    MIN_DIST_FROM_OBSTACLE = 160 
+    MIN_DIST_FROM_PORTAL = 300 
+    TARGET_COUNT = 15 
 
-            dist_to_spawn = ((rect.centerx - WINDOW_WIDTH//2)**2 + (rect.centery - (WINDOW_HEIGHT//2 + 150))**2)**0.5
-            if dist_to_spawn < 400:
-                attempts += 1
-                continue
+    for _ in range(TARGET_COUNT): 
+        placed = False 
+        attempts = 0 
+        while not placed and attempts < 50: 
+            x = random.randint(WINDOW_WIDTH//2 + 200, level_width - OB_SIZE) 
+            y = random.randint(50, WINDOW_HEIGHT - 50 - OB_SIZE) 
+            rect = pygame.Rect(x, y, OB_SIZE, OB_SIZE) 
 
-            too_close = False
-            rings = water_rings if current_level == 1 else algebra_rings
-            for ring in rings:
-                dx = rect.centerx - ring["rect"].centerx
-                dy = rect.centery - ring["rect"].centery
-                dist = (dx**2 + dy**2)**0.5
-                if dist < MIN_DIST_FROM_RING:
-                    too_close = True
-                    break
-            if too_close:
-                attempts += 1
-                continue
+            dist_to_spawn = ((rect.centerx - WINDOW_WIDTH//2)**2 + (rect.centery - (WINDOW_HEIGHT//2 + 150))**2)**0.5 
+            if dist_to_spawn < 400: 
+                attempts += 1 
+                continue 
 
-            dx = rect.centerx - portal_rect.centerx
-            dy = rect.centery - portal_rect.centery
-            dist = (dx**2 + dy**2)**0.5
-            if dist < MIN_DIST_FROM_PORTAL:
-                attempts += 1
-                continue
+            too_close = False 
+            rings = water_rings if current_level == 1 else algebra_rings 
+            for ring in rings: 
+                dx = rect.centerx - ring["rect"].centerx 
+                dy = rect.centery - ring["rect"].centery 
+                dist = (dx**2 + dy**2)**0.5 
+                if dist < MIN_DIST_FROM_RING: 
+                    too_close = True 
+                    break 
+            if too_close: 
+                attempts += 1 
+                continue 
 
-            overlap = False
-            for _, o_rect in obstacles:
-                dx = rect.centerx - o_rect.centerx
-                dy = rect.centery - o_rect.centery
-                dist = (dx**2 + dy**2)**0.5
-                if dist < MIN_DIST_FROM_OBSTACLE:
-                    overlap = True
-                    break
-            if overlap:
-                attempts += 1
-                continue
+            dx = rect.centerx - portal_rect.centerx 
+            dy = rect.centery - portal_rect.centery 
+            dist = (dx**2 + dy**2)**0.5 
+            if dist < MIN_DIST_FROM_PORTAL: 
+                attempts += 1 
+                continue 
 
-            kind = random.choice(["net", "jelly"])
-            obstacles.append((kind, rect))
-            placed = True
+            overlap = False 
+            for _, o_rect in obstacles: 
+                dx = rect.centerx - o_rect.centerx 
+                dy = rect.centery - o_rect.centery 
+                dist = (dx**2 + dy**2)**0.5 
+                if dist < MIN_DIST_FROM_OBSTACLE: 
+                    overlap = True 
+                    break 
+            if overlap: 
+                attempts += 1 
+                continue 
 
-    return obstacles
+            kind = random.choice(["net", "jelly"]) 
+            obstacles.append((kind, rect)) 
+            placed = True 
 
-obstacles = generate_obstacles()
+    return obstacles 
 
-# Drawing functions
-def draw_hut_button(rect, hover):
-    # Draw hut icon
-    base_color = HUT_BROWN
-    roof_color = HUT_ROOF
-    if hover:
-        base_color = tuple(min(c + 30, 255) for c in base_color)
-        roof_color = tuple(min(c + 30, 255) for c in roof_color)
-    
-    # Hut base
-    pygame.draw.rect(screen, base_color, pygame.Rect(rect.x + 20, rect.y + 30, 40, 30))
-    # Hut roof (triangle)
-    pygame.draw.polygon(screen, roof_color, [
-        (rect.x + 20, rect.y + 30),
-        (rect.x + 60, rect.y + 30),
-        (rect.x + 40, rect.y + 10)
-    ])
-    # Door
-    pygame.draw.rect(screen, (70, 40, 10), pygame.Rect(rect.x + 35, rect.y + 40, 10, 20))
-    # Window
-    pygame.draw.rect(screen, LIGHT_BLUE, pygame.Rect(rect.x + 25, rect.y + 35, 8, 8))
-    
-    # Label
-    label = math_font.render("Practice", True, WHITE)
-    screen.blit(label, (rect.x, rect.y + 70))
+obstacles = generate_obstacles() 
 
-def draw_menu():
-    screen.fill(WATER_BLUE)
-    title = title_font.render("Taniwha Tide", True, WHITE)
-    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 150)))
-    
-    mouse_pos = pygame.mouse.get_pos()
-    
-    # Start Game button
-    col = BUTTON_HOVER if start_button.collidepoint(mouse_pos) else BUTTON_COLOR
-    pygame.draw.rect(screen, col, start_button)
-    txt = button_font.render("Start Game", True, WHITE)
-    screen.blit(txt, txt.get_rect(center=start_button.center))
-    
-    # Practice Hub hut button
-    hover = practice_button.collidepoint(mouse_pos)
-    draw_hut_button(practice_button, hover)
+# Drawing functions 
+def draw_hut_button(rect, hover): 
+    # Draw hut icon 
+    base_color = HUT_BROWN 
+    roof_color = HUT_ROOF 
+    if hover: 
+        base_color = tuple(min(c + 30, 255) for c in base_color) 
+        roof_color = tuple(min(c + 30, 255) for c in roof_color) 
+    # Hut base 
+    pygame.draw.rect(screen, base_color, pygame.Rect(rect.x + 20, rect.y + 30, 40, 30)) 
+    # Hut roof (triangle) 
+    pygame.draw.polygon(screen, roof_color, [ 
+        (rect.x + 20, rect.y + 30), 
+        (rect.x + 60, rect.y + 30), 
+        (rect.x + 40, rect.y + 10) 
+    ]) 
+    # Door 
+    pygame.draw.rect(screen, (70, 40, 10), pygame.Rect(rect.x + 35, rect.y + 40, 10, 20)) 
+    # Window 
+    pygame.draw.rect(screen, LIGHT_BLUE, pygame.Rect(rect.x + 25, rect.y + 35, 8, 8)) 
+    # Label 
+    label = math_font.render("Practice", True, WHITE) 
+    screen.blit(label, (rect.x, rect.y + 70)) 
 
-def draw_practice_hub():
-    screen.fill(HUB_BACKGROUND)
-    title = title_font.render("Practice Hub", True, WHITE)
-    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 150)))
-    
-    mouse_pos = pygame.mouse.get_pos()
-    for button in practice_hub_buttons:
-        col = PRACTICE_BUTTON_HOVER if button["rect"].collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR
-        pygame.draw.rect(screen, col, button["rect"])
-        txt = button_font.render(button["text"], True, WHITE)
-        screen.blit(txt, txt.get_rect(center=button["rect"].center))
+def draw_menu(): 
+    screen.fill(WATER_BLUE) 
+    title = title_font.render("Taniwha Tide", True, WHITE) 
+    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 150))) 
+    mouse_pos = pygame.mouse.get_pos() 
+    # Start Game button 
+    col = BUTTON_HOVER if start_button.collidepoint(mouse_pos) else BUTTON_COLOR 
+    pygame.draw.rect(screen, col, start_button) 
+    txt = button_font.render("Start Game", True, WHITE) 
+    screen.blit(txt, txt.get_rect(center=start_button.center)) 
+    # Practice Hub hut button 
+    hover = practice_button.collidepoint(mouse_pos) 
+    draw_hut_button(practice_button, hover) 
 
-def draw_fractions_practice():
-    global show_theory, practice_inputs, practice_feedback, practice_answers_shown, practice_question_index, feedback_display_time
-    
-    # Ensure practice_question_index is within bounds
-    if practice_question_index >= len(fractions_practice):
-        practice_question_index = len(fractions_practice) - 1
-    if practice_question_index < 0:
-        practice_question_index = 0
-    
-    current = fractions_practice[practice_question_index]
-    
-    if show_theory:
-        screen.fill(THEORY_BACKGROUND)
-        title = title_font.render("Fractions Practice", True, WHITE)
-        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 30)))
-        
-        # Display theory lines with proper spacing
-        y_pos = 80
-        max_y = WINDOW_HEIGHT - 160  # Leave space for buttons
-        
-        for line in current["theory"]:
-            if y_pos > max_y:
-                break
-            text = theory_font.render(line, True, WHITE)
-            screen.blit(text, (50, y_pos))
-            y_pos += 22  # Reduced spacing
-        
-        # Display examples if they exist
-        if "examples" in current:
-            y_pos += 15
-            if y_pos <= max_y:
-                examples_title = button_font.render("Examples:", True, YELLOW)
-                screen.blit(examples_title, (50, y_pos))
-                y_pos += 35
-                
-                for example in current["examples"]:
-                    if y_pos > max_y:
-                        break
-                    text = math_font.render(example, True, LIGHT_BLUE)
-                    screen.blit(text, (70, y_pos))
-                    y_pos += 22  # Reduced spacing
-    else:
-        screen.fill(HUB_BACKGROUND)
-        title = title_font.render("Fractions Practice Problems", True, WHITE)
-        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 40)))
-        
-        y_pos = 100  # Starting position
-        max_y = WINDOW_HEIGHT - 160  # Leave space for buttons
-        
-        for i, problem in enumerate(current["practice"]):
-            if y_pos > max_y:
-                break
-                
-            # Draw question
-            question_text = practice_font.render(problem["question"], True, WHITE)
-            screen.blit(question_text, (50, y_pos))
-            
-            # Create input box if it doesn't exist
-            if i not in practice_inputs:
-                practice_inputs[i] = {"text": "", "active": False}
-                practice_feedback[i] = ""
-                practice_answers_shown[i] = False
-            
-            # Draw input box
-            input_rect = pygame.Rect(550, y_pos, 150, 30)
-            color = LIGHT_BLUE if practice_inputs[i]["active"] else INPUT_BOX_COLOR
-            pygame.draw.rect(screen, color, input_rect, 0)
-            pygame.draw.rect(screen, WHITE, input_rect, 2)
-            
-            # Render input text
-            input_surface = practice_font.render(practice_inputs[i]["text"], True, (0, 0, 0))
-            screen.blit(input_surface, (input_rect.x + 5, input_rect.y + 5))
-            
-            # Check answer button
-            check_btn = pygame.Rect(720, y_pos, 80, 30)
-            pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if check_btn.collidepoint(pygame.mouse.get_pos()) else PRACTICE_BUTTON_COLOR, check_btn)
-            check_text = math_font.render("Check", True, WHITE)
-            screen.blit(check_text, (check_btn.centerx - check_text.get_width()//2, check_btn.centery - check_text.get_height()//2))
-            
-            # Show feedback if available
-            if practice_feedback[i]:
-                feedback_text = math_font.render(practice_feedback[i], True, GREEN if practice_feedback[i] == "Correct!" else RED)
-                screen.blit(feedback_text, (810, y_pos))
-                
-                # Show correct answer if wrong and not already shown
-                if practice_feedback[i] != "Correct!" and not practice_answers_shown[i]:
-                    answer_text = math_font.render(f"Answer: {problem['answer']}", True, YELLOW)
-                    screen.blit(answer_text, (550, y_pos + 35))
-                    practice_answers_shown[i] = True
-                    feedback_display_time = FPS * 3  # Show feedback for 3 seconds
-            
-            # Vertical spacing between questions
-            y_pos += 70 if practice_feedback.get(i) and practice_feedback[i] != "Correct!" else 50
-    
-    # Navigation buttons
-    draw_practice_navigation_buttons()
+def draw_practice_hub(): 
+    screen.fill(HUB_BACKGROUND) 
+    title = title_font.render("Practice Hub", True, WHITE) 
+    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 150))) 
+    mouse_pos = pygame.mouse.get_pos() 
+    for button in practice_hub_buttons: 
+        col = PRACTICE_BUTTON_HOVER if button["rect"].collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR 
+        pygame.draw.rect(screen, col, button["rect"]) 
+        txt = button_font.render(button["text"], True, WHITE) 
+        screen.blit(txt, txt.get_rect(center=button["rect"].center)) 
 
-def draw_algebra_practice():
-    global show_theory, practice_inputs, practice_feedback, practice_answers_shown, practice_question_index, feedback_display_time
-    
-    # Ensure practice_question_index is within bounds
-    if practice_question_index >= len(algebra_practice):
-        practice_question_index = len(algebra_practice) - 1
-    if practice_question_index < 0:
-        practice_question_index = 0
-    
-    current = algebra_practice[practice_question_index]
-    
-    if show_theory:
-        screen.fill(THEORY_BACKGROUND)
-        title = title_font.render("Algebra Practice", True, WHITE)
-        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 30)))
-        
-        # Display theory lines with proper spacing
-        y_pos = 80
-        max_y = WINDOW_HEIGHT - 160  # Leave space for buttons
-        
-        for line in current["theory"]:
-            if y_pos > max_y:
-                break
-            text = theory_font.render(line, True, WHITE)
-            screen.blit(text, (50, y_pos))
-            y_pos += 22  # Reduced spacing
-        
-        # Display examples if they exist
-        if "examples" in current:
-            y_pos += 15
-            if y_pos <= max_y:
-                examples_title = button_font.render("Examples:", True, YELLOW)
-                screen.blit(examples_title, (50, y_pos))
-                y_pos += 35
-                
-                for example in current["examples"]:
-                    if y_pos > max_y:
-                        break
-                    text = math_font.render(example, True, LIGHT_BLUE)
-                    screen.blit(text, (70, y_pos))
-                    y_pos += 22  # Reduced spacing
-    else:
-        screen.fill(HUB_BACKGROUND)
-        title = title_font.render("Algebra Practice Problems", True, WHITE)
-        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 40)))
-        
-        y_pos = 100  # Starting position
-        max_y = WINDOW_HEIGHT - 160  # Leave space for buttons
-        
-        for i, problem in enumerate(current["practice"]):
-            if y_pos > max_y:
-                break
-                
-            # Draw question
-            question_text = practice_font.render(problem["question"], True, WHITE)
-            screen.blit(question_text, (50, y_pos))
-            
-            # Create input box if it doesn't exist
-            if i not in practice_inputs:
-                practice_inputs[i] = {"text": "", "active": False}
-                practice_feedback[i] = ""
-                practice_answers_shown[i] = False
-            
-            # Draw input box
-            input_rect = pygame.Rect(550, y_pos, 150, 30)
-            color = LIGHT_BLUE if practice_inputs[i]["active"] else INPUT_BOX_COLOR
-            pygame.draw.rect(screen, color, input_rect, 0)
-            pygame.draw.rect(screen, WHITE, input_rect, 2)
-            
-            # Render input text
-            input_surface = practice_font.render(practice_inputs[i]["text"], True, (0, 0, 0))
-            screen.blit(input_surface, (input_rect.x + 5, input_rect.y + 5))
-            
-            # Check answer button
-            check_btn = pygame.Rect(720, y_pos, 80, 30)
-            pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if check_btn.collidepoint(pygame.mouse.get_pos()) else PRACTICE_BUTTON_COLOR, check_btn)
-            check_text = math_font.render("Check", True, WHITE)
-            screen.blit(check_text, (check_btn.centerx - check_text.get_width()//2, check_btn.centery - check_text.get_height()//2))
-            
-            # Show feedback if available
-            if practice_feedback[i]:
-                feedback_text = math_font.render(practice_feedback[i], True, GREEN if practice_feedback[i] == "Correct!" else RED)
-                screen.blit(feedback_text, (810, y_pos))
-                
-                # Show correct answer if wrong and not already shown
-                if practice_feedback[i] != "Correct!" and not practice_answers_shown[i]:
-                    answer_text = math_font.render(f"Answer: {problem['answer']}", True, YELLOW)
-                    screen.blit(answer_text, (550, y_pos + 35))
-                    practice_answers_shown[i] = True
-                    feedback_display_time = FPS * 3  # Show feedback for 3 seconds
-            
-            # Vertical spacing between questions
-            y_pos += 70 if practice_feedback.get(i) and practice_feedback[i] != "Correct!" else 50
-    
-    # Navigation buttons
-    draw_practice_navigation_buttons()
+def draw_fractions_practice(): 
+    global show_theory, practice_inputs, practice_feedback, practice_answers_shown, practice_question_index, feedback_display_time 
+    # Ensure practice_question_index is within bounds 
+    if practice_question_index >= len(fractions_practice): 
+        practice_question_index = len(fractions_practice) - 1 
+    if practice_question_index < 0: 
+        practice_question_index = 0 
+    current = fractions_practice[practice_question_index] 
 
-def draw_practice_navigation_buttons():
-    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 150, 60)
-    next_btn = pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 100, 150, 60)
-    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 100, 200, 60)
-    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 180, 200, 60)
-    
-    mouse_pos = pygame.mouse.get_pos()
-    
-    # Back button (previous section)
-    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if back_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, back_btn)
-    back_txt = button_font.render("Previous", True, WHITE)
-    screen.blit(back_txt, back_txt.get_rect(center=back_btn.center))
-    
-    # Next button (only show if there is a next section)
-    current_practice = fractions_practice if current_scene == "fractions_practice" else algebra_practice
-    max_index = len(current_practice)-1
-    if practice_question_index < max_index:
-        pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if next_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, next_btn)
-        next_txt = button_font.render("Next", True, WHITE)
-        screen.blit(next_txt, next_txt.get_rect(center=next_btn.center))
-    
-    # Back to Menu button
-    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if menu_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, menu_btn)
-    menu_txt = button_font.render("Back to Menu", True, WHITE)
-    screen.blit(menu_txt, menu_txt.get_rect(center=menu_btn.center))
-    
-    # Toggle Theory/Practice button
-    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if toggle_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, toggle_btn)
-    toggle_txt = button_font.render("Show Problems" if show_theory else "Show Theory", True, WHITE)
-    screen.blit(toggle_txt, toggle_txt.get_rect(center=toggle_btn.center))
+    if show_theory: 
+        screen.fill(THEORY_BACKGROUND) 
+        title = title_font.render("Fractions Practice", True, WHITE) 
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 30))) 
+        # Display theory lines with proper spacing 
+        y_pos = 80 
+        max_y = WINDOW_HEIGHT - 160 # Leave space for buttons 
+        for line in current["theory"]: 
+            if y_pos > max_y: 
+                break 
+            text = theory_font.render(line, True, WHITE) 
+            screen.blit(text, (50, y_pos)) 
+            y_pos += 22 # Reduced spacing 
+        # Display examples if they exist 
+        if "examples" in current: 
+            y_pos += 15 
+            if y_pos <= max_y: 
+                examples_title = button_font.render("Examples:", True, YELLOW) 
+                screen.blit(examples_title, (50, y_pos)) 
+                y_pos += 35 
+                for example in current["examples"]: 
+                    if y_pos > max_y: 
+                        break 
+                    text = math_font.render(example, True, LIGHT_BLUE) 
+                    screen.blit(text, (70, y_pos)) 
+                    y_pos += 22 # Reduced spacing 
+    else: 
+        screen.fill(HUB_BACKGROUND) 
+        title = title_font.render("Fractions Practice Problems", True, WHITE) 
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 40))) 
+        y_pos = 100 # Starting position 
+        max_y = WINDOW_HEIGHT - 160 # Leave space for buttons 
+        for i, problem in enumerate(current["practice"]): 
+            if y_pos > max_y: 
+                break 
+            # Draw question 
+            question_text = practice_font.render(problem["question"], True, WHITE) 
+            screen.blit(question_text, (50, y_pos)) 
+            # Create input box if it doesn't exist 
+            if i not in practice_inputs: 
+                practice_inputs[i] = {"text": "", "active": False} 
+                practice_feedback[i] = "" 
+                practice_answers_shown[i] = False 
+            # Draw input box 
+            input_rect = pygame.Rect(550, y_pos, 150, 30) 
+            color = LIGHT_BLUE if practice_inputs[i]["active"] else INPUT_BOX_COLOR 
+            pygame.draw.rect(screen, color, input_rect, 0) 
+            pygame.draw.rect(screen, WHITE, input_rect, 2) 
+            # Render input text 
+            input_surface = practice_font.render(practice_inputs[i]["text"], True, (0, 0, 0)) 
+            screen.blit(input_surface, (input_rect.x + 5, input_rect.y + 5)) 
+            # Check answer button 
+            check_btn = pygame.Rect(720, y_pos, 80, 30) 
+            pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if check_btn.collidepoint(pygame.mouse.get_pos()) else PRACTICE_BUTTON_COLOR, check_btn) 
+            check_text = math_font.render("Check", True, WHITE) 
+            screen.blit(check_text, (check_btn.centerx - check_text.get_width()//2, check_btn.centery - check_text.get_height()//2)) 
+            # Show feedback if available 
+            if practice_feedback[i]: 
+                feedback_text = math_font.render(practice_feedback[i], True, GREEN if practice_feedback[i] == "Correct!" else RED) 
+                screen.blit(feedback_text, (810, y_pos)) 
+            # Show correct answer if wrong and not already shown 
+            if practice_feedback[i] != "Correct!" and not practice_answers_shown[i]: 
+                answer_text = math_font.render(f"Answer: {problem['answer']}", True, YELLOW) 
+                screen.blit(answer_text, (550, y_pos + 35)) 
+                practice_answers_shown[i] = True 
+                feedback_display_time = FPS * 3 # Show feedback for 3 seconds 
+            # Vertical spacing between questions 
+            y_pos += 70 if practice_feedback.get(i) and practice_feedback[i] != "Correct!" else 50 
 
-def draw_health():
-    lbl = health_font.render(f"Lives: {lives}", True, RED)
-    screen.blit(lbl, (20, 20))
-    q_lbl = health_font.render(f"Questions: {questions_answered}/{total_questions}", True, GREEN)
-    screen.blit(q_lbl, (20, 60))
+    # Navigation buttons 
+    draw_practice_navigation_buttons() 
 
-def draw_question_popup():
-    popup_rect = pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 - 100, 400, 200)
-    pygame.draw.rect(screen, SEA_BLUE, popup_rect)
-    pygame.draw.rect(screen, WHITE, popup_rect, 3)
-    
-    question_text = question_font.render(current_question["question"], True, WHITE)
-    screen.blit(question_text, (WINDOW_WIDTH//2 - question_text.get_width()//2, WINDOW_HEIGHT//2 - 50))
-    
-    input_text = math_font.render(f"Answer: {user_input}", True, WHITE)
-    screen.blit(input_text, (WINDOW_WIDTH//2 - input_text.get_width()//2, WINDOW_HEIGHT//2))
-    
-    instructions = health_font.render("Press ENTER to submit", True, WHITE)
-    screen.blit(instructions, (WINDOW_WIDTH//2 - instructions.get_width()//2, WINDOW_HEIGHT//2 + 50))
+def draw_algebra_practice(): 
+    global show_theory, practice_inputs, practice_feedback, practice_answers_shown, practice_question_index, feedback_display_time 
+    # Ensure practice_question_index is within bounds 
+    if practice_question_index >= len(algebra_practice): 
+        practice_question_index = len(algebra_practice) - 1 
+    if practice_question_index < 0: 
+        practice_question_index = 0 
+    current = algebra_practice[practice_question_index] 
 
-def handle_math_and_feedback():
-    global feedback_timer, answer_feedback
-    if math_question_active and current_question:
-        draw_question_popup()
-    elif answer_feedback and feedback_timer > 0:
-        col = GREEN if answer_feedback=="Correct!" else RED
-        f = health_font.render(answer_feedback, True, col)
-        screen.blit(f, (WINDOW_WIDTH//2 - f.get_width()//2, WINDOW_HEIGHT//2 + 80))
-        feedback_timer -= 1
-        if feedback_timer <= 0:
-            answer_feedback = ""
+    if show_theory: 
+        screen.fill(THEORY_BACKGROUND) 
+        title = title_font.render("Algebra Practice", True, WHITE) 
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 30))) 
+        # Display theory lines with proper spacing 
+        y_pos = 80 
+        max_y = WINDOW_HEIGHT - 160 # Leave space for buttons 
+        for line in current["theory"]: 
+            if y_pos > max_y: 
+                break 
+            text = theory_font.render(line, True, WHITE) 
+            screen.blit(text, (50, y_pos)) 
+            y_pos += 22 # Reduced spacing 
+        # Display examples if they exist 
+        if "examples" in current: 
+            y_pos += 15 
+            if y_pos <= max_y: 
+                examples_title = button_font.render("Examples:", True, YELLOW) 
+                screen.blit(examples_title, (50, y_pos)) 
+                y_pos += 35 
+                for example in current["examples"]: 
+                    if y_pos > max_y: 
+                        break 
+                    text = math_font.render(example, True, LIGHT_BLUE) 
+                    screen.blit(text, (70, y_pos)) 
+                    y_pos += 22 # Reduced spacing 
+    else: 
+        screen.fill(HUB_BACKGROUND) 
+        title = title_font.render("Algebra Practice Problems", True, WHITE) 
+        screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 40))) 
+        y_pos = 100 # Starting position 
+        max_y = WINDOW_HEIGHT - 160 # Leave space for buttons 
+        for i, problem in enumerate(current["practice"]): 
+            if y_pos > max_y: 
+                break 
+            # Draw question 
+            question_text = practice_font.render(problem["question"], True, WHITE) 
+            screen.blit(question_text, (50, y_pos)) 
+            # Create input box if it doesn't exist 
+            if i not in practice_inputs: 
+                practice_inputs[i] = {"text": "", "active": False} 
+                practice_feedback[i] = "" 
+                practice_answers_shown[i] = False 
+            # Draw input box 
+            input_rect = pygame.Rect(550, y_pos, 150, 30) 
+            color = LIGHT_BLUE if practice_inputs[i]["active"] else INPUT_BOX_COLOR 
+            pygame.draw.rect(screen, color, input_rect, 0) 
+            pygame.draw.rect(screen, WHITE, input_rect, 2) 
+            # Render input text 
+            input_surface = practice_font.render(practice_inputs[i]["text"], True, (0, 0, 0)) 
+            screen.blit(input_surface, (input_rect.x + 5, input_rect.y + 5)) 
+            # Check answer button 
+            check_btn = pygame.Rect(720, y_pos, 80, 30) 
+            pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if check_btn.collidepoint(pygame.mouse.get_pos()) else PRACTICE_BUTTON_COLOR, check_btn) 
+            check_text = math_font.render("Check", True, WHITE) 
+            screen.blit(check_text, (check_btn.centerx - check_text.get_width()//2, check_btn.centery - check_text.get_height()//2)) 
+            # Show feedback if available 
+            if practice_feedback[i]: 
+                feedback_text = math_font.render(practice_feedback[i], True, GREEN if practice_feedback[i] == "Correct!" else RED) 
+                screen.blit(feedback_text, (810, y_pos)) 
+            # Show correct answer if wrong and not already shown 
+            if practice_feedback[i] != "Correct!" and not practice_answers_shown[i]: 
+                answer_text = math_font.render(f"Answer: {problem['answer']}", True, YELLOW) 
+                screen.blit(answer_text, (550, y_pos + 35)) 
+                practice_answers_shown[i] = True 
+                feedback_display_time = FPS * 3 # Show feedback for 3 seconds 
+            # Vertical spacing between questions 
+            y_pos += 70 if practice_feedback.get(i) and practice_feedback[i] != "Correct!" else 50 
 
-def draw_game_over():
-    screen.fill(SEA_BLUE)
-    over = title_font.render("GAME OVER", True, RED)
-    screen.blit(over, over.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 50)))
-    
-    # Replay option buttons
-    yes_btn = pygame.Rect(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT//2 + 50, 100, 40)
-    no_btn = pygame.Rect(WINDOW_WIDTH//2 + 20, WINDOW_HEIGHT//2 + 50, 100, 40)
-    
-    mouse_pos = pygame.mouse.get_pos()
-    
-    pygame.draw.rect(screen, GREEN if yes_btn.collidepoint(mouse_pos) else (0, 200, 0), yes_btn)
-    pygame.draw.rect(screen, RED if no_btn.collidepoint(mouse_pos) else (200, 0, 0), no_btn)
-    
-    yes_txt = button_font.render("Yes", True, WHITE)
-    screen.blit(yes_txt, (yes_btn.centerx - yes_txt.get_width()//2, yes_btn.centery - yes_txt.get_height()//2))
-    no_txt = button_font.render("No", True, WHITE)
-    screen.blit(no_txt, (no_btn.centerx - no_txt.get_width()//2, no_btn.centery - no_txt.get_height()//2))
-    
-    prompt = button_font.render("Play again?", True, WHITE)
-    screen.blit(prompt, (WINDOW_WIDTH//2 - prompt.get_width()//2, WINDOW_HEIGHT//2 + 20))
-    
-    return yes_btn, no_btn
+    # Navigation buttons 
+    draw_practice_navigation_buttons() 
 
-def draw_level_complete():
-    screen.fill(SEA_BLUE)
-    complete = title_font.render("LEVEL COMPLETE!", True, GREEN)
-    screen.blit(complete, complete.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 50)))
+def draw_practice_navigation_buttons(): 
+    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 150, 60) 
+    next_btn = pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 100, 150, 60) 
+    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 100, 200, 60) 
+    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 180, 200, 60) 
+    mouse_pos = pygame.mouse.get_pos() 
+
+    # Back button (previous section) 
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if back_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, back_btn) 
+    back_txt = button_font.render("Previous", True, WHITE) 
+    screen.blit(back_txt, back_txt.get_rect(center=back_btn.center)) 
+
+    # Next button (only show if there is a next section) 
+    current_practice = fractions_practice if current_scene == "fractions_practice" else algebra_practice 
+    max_index = len(current_practice)-1 
+    if practice_question_index < max_index: 
+        pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if next_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, next_btn) 
+        next_txt = button_font.render("Next", True, WHITE) 
+        screen.blit(next_txt, next_txt.get_rect(center=next_btn.center)) 
+
+    # Back to Menu button 
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if menu_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, menu_btn) 
+    menu_txt = button_font.render("Back to Menu", True, WHITE) 
+    screen.blit(menu_txt, menu_txt.get_rect(center=menu_btn.center)) 
+
+    # Toggle Theory/Practice button 
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if toggle_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, toggle_btn) 
+    toggle_txt = button_font.render("Show Problems" if show_theory else "Show Theory", True, WHITE) 
+    screen.blit(toggle_txt, toggle_txt.get_rect(center=toggle_btn.center)) 
+
+def draw_health(): 
+    lbl = health_font.render(f"Lives: {lives}", True, RED) 
+    screen.blit(lbl, (20, 20)) 
+    q_lbl = health_font.render(f"Questions: {questions_answered}/{total_questions}", True, GREEN) 
+    screen.blit(q_lbl, (20, 60)) 
+
+def draw_question_popup(): 
+    popup_rect = pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 - 100, 400, 200) 
+    pygame.draw.rect(screen, SEA_BLUE, popup_rect) 
+    pygame.draw.rect(screen, WHITE, popup_rect, 3) 
+    question_text = question_font.render(current_question["question"], True, WHITE) 
+    screen.blit(question_text, (WINDOW_WIDTH//2 - question_text.get_width()//2, WINDOW_HEIGHT//2 - 50)) 
+    input_text = math_font.render(f"Answer: {user_input}", True, WHITE) 
+    screen.blit(input_text, (WINDOW_WIDTH//2 - input_text.get_width()//2, WINDOW_HEIGHT//2)) 
+    instructions = health_font.render("Press ENTER to submit", True, WHITE) 
+    screen.blit(instructions, (WINDOW_WIDTH//2 - instructions.get_width()//2, WINDOW_HEIGHT//2 + 50)) 
+
+def handle_math_and_feedback(): 
+    global feedback_timer, answer_feedback 
+    if math_question_active and current_question: 
+        draw_question_popup() 
+    elif answer_feedback and feedback_timer > 0: 
+        col = GREEN if answer_feedback=="Correct!" else RED 
+        f = health_font.render(answer_feedback, True, col) 
+        screen.blit(f, (WINDOW_WIDTH//2 - f.get_width()//2, WINDOW_HEIGHT//2 + 80)) 
+        feedback_timer -= 1 
+        if feedback_timer <= 0: 
+            answer_feedback = "" 
+
+def draw_game_over(): 
+    screen.fill(SEA_BLUE) 
+    over = title_font.render("GAME OVER", True, RED) 
+    screen.blit(over, over.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 50))) 
+    # Replay option buttons 
+    yes_btn = pygame.Rect(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT//2 + 50, 100, 40) 
+    no_btn = pygame.Rect(WINDOW_WIDTH//2 + 20, WINDOW_HEIGHT//2 + 50, 100, 40) 
+    mouse_pos = pygame.mouse.get_pos() 
+    pygame.draw.rect(screen, GREEN if yes_btn.collidepoint(mouse_pos) else (0, 200, 0), yes_btn) 
+    pygame.draw.rect(screen, RED if no_btn.collidepoint(mouse_pos) else (200, 0, 0), no_btn) 
+    yes_txt = button_font.render("Yes", True, WHITE) 
+    screen.blit(yes_txt, (yes_btn.centerx - yes_txt.get_width()//2, yes_btn.centery - yes_txt.get_height()//2)) 
+    no_txt = button_font.render("No", True, WHITE) 
+    screen.blit(no_txt, (no_btn.centerx - no_txt.get_width()//2, no_btn.centery - no_txt.get_height()//2)) 
+    prompt = button_font.render("Play again?", True, WHITE) 
+    screen.blit(prompt, (WINDOW_WIDTH//2 - prompt.get_width()//2, WINDOW_HEIGHT//2 + 20)) 
+    return yes_btn, no_btn 
+
+def draw_level_complete(): 
+    global game_complete
+    screen.fill(SEA_BLUE) 
     
     if current_level == 2:
+        game_complete = True
+        complete = title_font.render("GAME COMPLETE!", True, YELLOW)
+        screen.blit(complete, complete.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 100)))
         congrats = button_font.render("Congratulations! You finished the game!", True, WHITE)
-        screen.blit(congrats, (WINDOW_WIDTH//2 - congrats.get_width()//2, WINDOW_HEIGHT//2 + 20))
-    
-    # Replay option buttons
-    yes_btn = pygame.Rect(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT//2 + 50, 100, 40)
-    no_btn = pygame.Rect(WINDOW_WIDTH//2 + 20, WINDOW_HEIGHT//2 + 50, 100, 40)
-    
+        screen.blit(congrats, (WINDOW_WIDTH//2 - congrats.get_width()//2, WINDOW_HEIGHT//2 - 30))
+    else:
+        complete = title_font.render("LEVEL COMPLETE!", True, GREEN)
+        screen.blit(complete, complete.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 50)))
+
+    # Replay option buttons 
+    yes_btn = pygame.Rect(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT//2 + 50, 100, 40) 
+    no_btn = pygame.Rect(WINDOW_WIDTH//2 + 20, WINDOW_HEIGHT//2 + 50, 100, 40) 
+    mouse_pos = pygame.mouse.get_pos() 
+    pygame.draw.rect(screen, GREEN if yes_btn.collidepoint(mouse_pos) else (0, 200, 0), yes_btn) 
+    pygame.draw.rect(screen, RED if no_btn.collidepoint(mouse_pos) else (200, 0, 0), no_btn) 
+    yes_txt = button_font.render("Yes", True, WHITE) 
+    screen.blit(yes_txt, (yes_btn.centerx - yes_txt.get_width()//2, yes_btn.centery - yes_txt.get_height()//2)) 
+    no_txt = button_font.render("No", True, WHITE) 
+    screen.blit(no_txt, (no_btn.centerx - no_txt.get_width()//2, no_btn.centery - no_txt.get_height()//2)) 
+    prompt = button_font.render("Play again?", True, WHITE) 
+    screen.blit(prompt, (WINDOW_WIDTH//2 - prompt.get_width()//2, WINDOW_HEIGHT//2 + 20)) 
+    return yes_btn, no_btn 
+
+def draw_portal(): 
+    global portal_active 
+    portal_screen_rect = portal_rect.move(-camera_x, 0) 
+    all_answered = questions_answered >= total_questions 
+    portal_active = all_answered 
+    if all_answered: 
+        pygame.draw.ellipse(screen, YELLOW, portal_screen_rect, 5) 
+        label = math_font.render("NEXT LEVEL!", True, YELLOW) 
+    else: 
+        pygame.draw.ellipse(screen, PURPLE, portal_screen_rect, 5) 
+        label = math_font.render(f"{total_questions - questions_answered} left", True, PURPLE) 
+    screen.blit(label, (portal_screen_rect.centerx - label.get_width()//2, portal_screen_rect.centery + 80)) 
+
+def draw_water_ring_animation(surface, rect, time_offset): 
+    current_time = pygame.time.get_ticks() * 0.001 
+    wave_time = current_time + time_offset 
+    temp_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA) 
+    for i in range(1, 4): 
+        radius = 20 + i * 10 + math.sin(wave_time * 2 + i) * 5 
+        alpha = 200 - i * 50 
+        width = max(1, 6 - i) 
+        color = list(LIGHT_BLUE) 
+        color.append(alpha) 
+        pygame.draw.circle(temp_surface, color,  
+                          (rect.width//2, rect.height//2),  
+                          radius, width) 
+    main_radius = 30 + math.sin(wave_time * 3) * 8 
+    pygame.draw.circle(temp_surface, SEA_BLUE + (150,), 
+                     (rect.width//2, rect.height//2),  
+                     main_radius, 4) 
+    inner_radius = 15 + math.cos(wave_time * 4) * 3 
+    pygame.draw.circle(temp_surface, LIGHT_BLUE + (200,),  
+                     (rect.width//2, rect.height//2),  
+                     inner_radius, 2) 
+    screen.blit(temp_surface, rect) 
+
+def draw_water_rings(): 
+    rings = water_rings if current_level == 1 else algebra_rings 
+    for ring in rings: 
+        r = ring["rect"].move(-camera_x, 0) 
+        if ring["answered"]: 
+            draw_water_ring_animation(water_ring_img, r, ring["animation_offset"]) 
+            # Draw green checkmark 
+            pygame.draw.line(screen, GREEN, (r.centerx-15, r.centery), (r.centerx, r.centery+15), 4) 
+            pygame.draw.line(screen, GREEN, (r.centerx, r.centery+15), (r.centerx+25, r.centery-15), 4) 
+        elif ring.get("incorrect", False): 
+            draw_water_ring_animation(water_ring_img, r, ring["animation_offset"]) 
+            # Draw red X 
+            pygame.draw.line(screen, RED, (r.centerx-15, r.centery-15), (r.centerx+15, r.centery+15), 4) 
+            pygame.draw.line(screen, RED, (r.centerx+15, r.centery-15), (r.centerx-15, r.centery+15), 4) 
+        elif ring["triggered"]: 
+            size = 120 + int(10 * math.sin(pygame.time.get_ticks() * 0.005)) 
+            temp_img = pygame.Surface((size, size), pygame.SRCALPHA) 
+            draw_water_ring_animation(temp_img, pygame.Rect(0, 0, size, size), ring["animation_offset"]) 
+            temp_rect = temp_img.get_rect(center=r.center) 
+            screen.blit(temp_img, temp_rect) 
+        else: 
+            draw_water_ring_animation(water_ring_img, r, ring["animation_offset"]) 
+
+def draw_taniwha(): 
+    global hurt_timer 
+    taniwha_screen_rect = taniwha_rect.move(-camera_x, 0) 
+    if hurt_timer > 0 and not math_question_active: 
+        screen.blit(taniwha_hurt_img, taniwha_screen_rect) 
+        hurt_timer -= 1 
+    else: 
+        screen.blit(taniwha_img, taniwha_screen_rect) 
+
+def draw_help_button():
     mouse_pos = pygame.mouse.get_pos()
-    
-    pygame.draw.rect(screen, GREEN if yes_btn.collidepoint(mouse_pos) else (0, 200, 0), yes_btn)
-    pygame.draw.rect(screen, RED if no_btn.collidepoint(mouse_pos) else (200, 0, 0), no_btn)
-    
-    yes_txt = button_font.render("Yes", True, WHITE)
-    screen.blit(yes_txt, (yes_btn.centerx - yes_txt.get_width()//2, yes_btn.centery - yes_txt.get_height()//2))
-    no_txt = button_font.render("No", True, WHITE)
-    screen.blit(no_txt, (no_btn.centerx - no_txt.get_width()//2, no_btn.centery - no_txt.get_height()//2))
-    
-    prompt = button_font.render("Play again?", True, WHITE)
-    screen.blit(prompt, (WINDOW_WIDTH//2 - prompt.get_width()//2, WINDOW_HEIGHT//2 + 20))
-    
-    return yes_btn, no_btn
+    hover = help_button_rect.collidepoint(mouse_pos)
+    color = (0, 0, 150) if hover else DARK_NAVY
+    pygame.draw.rect(screen, color, help_button_rect)
+    question_mark = button_font.render("?", True, WHITE)
+    screen.blit(question_mark, (help_button_rect.centerx - question_mark.get_width()//2, 
+                               help_button_rect.centery - question_mark.get_height()//2))
 
-def draw_portal():
-    global portal_active
-    portal_screen_rect = portal_rect.move(-camera_x, 0)
-    all_answered = questions_answered >= total_questions
-    portal_active = all_answered
+def draw_help_popup():
+    # Draw semi-transparent overlay
+    overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 180))
+    screen.blit(overlay, (0, 0))
     
-    if all_answered:
-        pygame.draw.ellipse(screen, YELLOW, portal_screen_rect, 5)
-        label = math_font.render("NEXT LEVEL!", True, YELLOW)
-    else:
-        pygame.draw.ellipse(screen, PURPLE, portal_screen_rect, 5)
-        label = math_font.render(f"{total_questions - questions_answered} left", True, PURPLE)
-    screen.blit(label, (portal_screen_rect.centerx - label.get_width()//2, portal_screen_rect.centery + 80))
-
-def draw_water_ring_animation(surface, rect, time_offset):
-    current_time = pygame.time.get_ticks() * 0.001
-    wave_time = current_time + time_offset
+    # Draw popup background
+    popup_rect = pygame.Rect(100, 100, WINDOW_WIDTH - 200, WINDOW_HEIGHT - 200)
+    pygame.draw.rect(screen, HUB_BACKGROUND, popup_rect)
+    pygame.draw.rect(screen, WHITE, popup_rect, 3)
     
-    temp_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+    # Draw close button
+    close_btn = pygame.Rect(popup_rect.right - 40, popup_rect.top + 10, 30, 30)
+    pygame.draw.rect(screen, RED, close_btn)
+    close_x = button_font.render("X", True, WHITE)
+    screen.blit(close_x, (close_btn.centerx - close_x.get_width()//2, 
+                         close_btn.centery - close_x.get_height()//2))
     
-    for i in range(1, 4):
-        radius = 20 + i * 10 + math.sin(wave_time * 2 + i) * 5
-        alpha = 200 - i * 50
-        width = max(1, 6 - i)
+    # Draw title
+    title = title_font.render("HELP - " + ("Fractions" if help_popup_type == "fractions" else "Algebra"), True, WHITE)
+    screen.blit(title, (popup_rect.centerx - title.get_width()//2, popup_rect.top + 20))
+    
+    # Draw toggle button
+    toggle_btn = pygame.Rect(popup_rect.centerx - 100, popup_rect.top + 80, 200, 40)
+    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if toggle_btn.collidepoint(pygame.mouse.get_pos()) else PRACTICE_BUTTON_COLOR, toggle_btn)
+    toggle_text = button_font.render("Switch to " + ("Algebra" if help_popup_type == "fractions" else "Fractions"), True, WHITE)
+    screen.blit(toggle_text, (toggle_btn.centerx - toggle_text.get_width()//2, toggle_btn.centery - toggle_text.get_height()//2))
+    
+    # Draw content
+    y_pos = popup_rect.top + 140
+    max_y = popup_rect.bottom - 20
+    
+    practice_content = fractions_practice if help_popup_type == "fractions" else algebra_practice
+    
+    for section in practice_content:
+        # Draw theory
+        for line in section["theory"]:
+            if y_pos > max_y:
+                break
+            text = small_font.render(line, True, WHITE)
+            screen.blit(text, (popup_rect.left + 20, y_pos))
+            y_pos += 20
         
-        color = list(LIGHT_BLUE)
-        color.append(alpha)
-        pygame.draw.circle(temp_surface, color, 
-                          (rect.width//2, rect.height//2), 
-                          radius, width)
+        # Draw examples if they exist
+        if "examples" in section:
+            y_pos += 10
+            if y_pos <= max_y:
+                examples_title = small_font.render("Examples:", True, YELLOW)
+                screen.blit(examples_title, (popup_rect.left + 20, y_pos))
+                y_pos += 30
+                for example in section["examples"]:
+                    if y_pos > max_y:
+                        break
+                    text = small_font.render(example, True, LIGHT_BLUE)
+                    screen.blit(text, (popup_rect.left + 40, y_pos))
+                    y_pos += 20
+        y_pos += 20  # Extra space between sections
     
-    main_radius = 30 + math.sin(wave_time * 3) * 8
-    pygame.draw.circle(temp_surface, SEA_BLUE + (150,),
-                      (rect.width//2, rect.height//2), 
-                      main_radius, 4)
+    return close_btn, toggle_btn
+
+def draw_level(): 
+    if current_level == 1: 
+        rel_x = camera_x % background_image.get_width() 
+        screen.blit(background_image, (-rel_x, 0)) 
+        screen.blit(background_image, (-rel_x + background_image.get_width(), 0)) 
+    else: 
+        screen.fill((50, 50, 80)) 
+        algebra_label = title_font.render("ALGEBRA ZONE", True, WHITE) 
+        screen.blit(algebra_label, (WINDOW_WIDTH//2 - algebra_label.get_width()//2, 50)) 
     
-    inner_radius = 15 + math.cos(wave_time * 4) * 3
-    pygame.draw.circle(temp_surface, LIGHT_BLUE + (200,), 
-                      (rect.width//2, rect.height//2), 
-                      inner_radius, 2)
+    draw_water_rings() 
+    for kind, rect in obstacles: 
+        r = rect.move(-camera_x, 0) 
+        if kind == "net": 
+            screen.blit(net_image, r) 
+        else: 
+            screen.blit(jellyfish_image, r) 
+    draw_taniwha() 
+    draw_health() 
+    handle_math_and_feedback() 
+    draw_help_button()
     
-    screen.blit(temp_surface, rect)
+    if current_level == 1: 
+        draw_portal() 
 
-def draw_water_rings():
-    rings = water_rings if current_level == 1 else algebra_rings
-    for ring in rings:
-        r = ring["rect"].move(-camera_x, 0)
-        if ring["answered"]:
-            draw_water_ring_animation(water_ring_img, r, ring["animation_offset"])
-            # Draw green checkmark
-            pygame.draw.line(screen, GREEN, (r.centerx-15, r.centery), (r.centerx, r.centery+15), 4)
-            pygame.draw.line(screen, GREEN, (r.centerx, r.centery+15), (r.centerx+25, r.centery-15), 4)
-        elif ring.get("incorrect", False):
-            draw_water_ring_animation(water_ring_img, r, ring["animation_offset"])
-            # Draw red X
-            pygame.draw.line(screen, RED, (r.centerx-15, r.centery-15), (r.centerx+15, r.centery+15), 4)
-            pygame.draw.line(screen, RED, (r.centerx+15, r.centery-15), (r.centerx-15, r.centery+15), 4)
-        elif ring["triggered"]:
-            size = 120 + int(10 * math.sin(pygame.time.get_ticks() * 0.005))
-            temp_img = pygame.Surface((size, size), pygame.SRCALPHA)
-            draw_water_ring_animation(temp_img, pygame.Rect(0, 0, size, size), ring["animation_offset"])
-            temp_rect = temp_img.get_rect(center=r.center)
-            screen.blit(temp_img, temp_rect)
-        else:
-            draw_water_ring_animation(water_ring_img, r, ring["animation_offset"])
-
-def draw_taniwha():
-    global hurt_timer
-    taniwha_screen_rect = taniwha_rect.move(-camera_x, 0)
+# Game logic functions 
+def handle_movement(keys): 
+    global camera_x, boost_timer, boost_active, current_scene, current_level, questions_answered 
+    global obstacles, water_rings, algebra_rings, portal_active, level_complete, game_complete
     
-    if hurt_timer > 0 and not math_question_active:
-        screen.blit(taniwha_hurt_img, taniwha_screen_rect)
-        hurt_timer -= 1
-    else:
-        screen.blit(taniwha_img, taniwha_screen_rect)
-
-def draw_level():
-    if current_level == 1:
-        rel_x = camera_x % background_image.get_width()
-        screen.blit(background_image, (-rel_x, 0))
-        screen.blit(background_image, (-rel_x + background_image.get_width(), 0))
-    else:
-        screen.fill((50, 50, 80))
-        algebra_label = title_font.render("ALGEBRA ZONE", True, WHITE)
-        screen.blit(algebra_label, (WINDOW_WIDTH//2 - algebra_label.get_width()//2, 50))
+    if math_question_active or game_over or level_complete or show_help_popup: 
+        return 
     
-    draw_water_rings()
+    speed = taniwha_speed + 3 if boost_active else taniwha_speed 
+
+    if keys[pygame.K_LEFT]: 
+        taniwha_rect.x -= speed 
+    if keys[pygame.K_RIGHT]: 
+        taniwha_rect.x += speed 
+    if keys[pygame.K_UP]: 
+        taniwha_rect.y -= speed 
+    if keys[pygame.K_DOWN]: 
+        taniwha_rect.y += speed 
+
+    taniwha_rect.x = max(0, min(taniwha_rect.x, level_width - taniwha_rect.width)) 
+    taniwha_rect.y = max(0, min(taniwha_rect.y, WINDOW_HEIGHT - taniwha_rect.height)) 
+
+    if current_level == 1 and portal_active: 
+        portal_screen_rect = portal_rect.move(-camera_x, 0) 
+        taniwha_screen_rect = taniwha_rect.move(-camera_x, 0) 
+        if taniwha_screen_rect.colliderect(portal_screen_rect): 
+            current_level = 2 
+            questions_answered = 0 
+            taniwha_rect.x = 100 
+            taniwha_rect.y = WINDOW_HEIGHT//2 
+            camera_x = 0 
+            obstacles = generate_obstacles() 
+            algebra_rings = generate_algebra_rings() 
+    elif current_level == 2 and questions_answered >= total_questions: 
+        level_complete = True 
+
+    left_bound = WINDOW_WIDTH * 0.3 
+    right_bound = WINDOW_WIDTH * 0.7 
+    cx = taniwha_rect.centerx - camera_x 
+    if cx > right_bound: 
+        camera_x = taniwha_rect.centerx - right_bound 
+    elif cx < left_bound: 
+        camera_x = taniwha_rect.centerx - left_bound 
+    camera_x = max(0, min(camera_x, level_width - WINDOW_WIDTH)) 
+
+    if boost_active: 
+        boost_timer -= 1 
+        if boost_timer <= 0: 
+            boost_active = False 
+
+def check_ring_triggers(): 
+    global math_question_active, user_input, answer_feedback, feedback_timer, current_question, help_popup_type
     
-    for kind, rect in obstacles:
-        r = rect.move(-camera_x, 0)
-        if kind == "net":
-            screen.blit(net_image, r)
-        else:
-            screen.blit(jellyfish_image, r)
+    rings = water_rings if current_level == 1 else algebra_rings 
+    for ring in rings: 
+        ring_screen_rect = ring["rect"].move(-camera_x, 0) 
+        taniwha_screen_rect = taniwha_rect.move(-camera_x, 0) 
+        if (taniwha_screen_rect.colliderect(ring_screen_rect) and  
+            not ring["triggered"] and not ring["answered"] and not ring.get("incorrect", False)): 
+            ring["triggered"] = True 
+            math_question_active = True 
+            current_question = ring 
+            user_input = "" 
+            answer_feedback = "" 
+            feedback_timer = 0 
+            help_popup_type = "fractions" if current_level == 1 else "algebra"
+            break 
+
+def check_obstacle_collision(): 
+    global lives, game_over, hurt_timer 
+    if math_question_active or show_help_popup: 
+        return 
+
+    # Get taniwha's hitbox (smaller than the actual image for better gameplay) 
+    taniwha_hitbox = taniwha_rect.inflate(-50, -50) # Make hitbox smaller by 50 pixels on each side 
+    for kind, rect in obstacles: 
+        r = rect.move(-camera_x, 0) 
+        if taniwha_hitbox.colliderect(r): # Only collide if actually touching 
+            lives -= 1 
+            hurt_timer = HURT_DURATION 
+            obstacles.remove((kind, rect)) 
+            if lives <= 0: 
+                game_over = True 
+            break 
+
+def check_answer(): 
+    global answer_feedback, feedback_timer, math_question_active, questions_answered 
+    global boost_active, boost_timer, lives, game_over, hurt_timer, current_question 
+    global user_input # Make sure we can modify the global user_input 
+
+    # Initialize default values 
+    correct = False 
+    answer_feedback = "" 
+    feedback_timer = 0 
+
+    # Safety checks 
+    if not current_question: 
+        math_question_active = False 
+        return 
+
+    # Check for empty input 
+    if not hasattr(check_answer, 'user_input_initialized'): 
+        user_input = "" 
+        setattr(check_answer, 'user_input_initialized', True) 
+    if user_input is None or not isinstance(user_input, str) or user_input.strip() == "": 
+        answer_feedback = "Please enter an answer!" 
+        feedback_timer = FPS * 2 
+        math_question_active = True # Keep the question active 
+        return 
+
+    # Process answer based on level 
+    try: 
+        if current_level == 1: 
+            # Handle fraction answers 
+            try: 
+                # Try direct fraction parsing first 
+                user_answer = Fraction(user_input) 
+            except (ValueError, ZeroDivisionError): 
+                try: 
+                    # Try decimal conversion if fraction fails 
+                    user_answer = Fraction(float(user_input)).limit_denominator() 
+                except (ValueError, ZeroDivisionError): 
+                    answer_feedback = "Invalid fraction format!" 
+                    feedback_timer = FPS * 2 
+                    math_question_active = True 
+                    return 
+
+            correct_answer = current_question.get("answer_frac") 
+            if correct_answer is None: 
+                answer_feedback = "Question error!" 
+                feedback_timer = FPS * 2 
+                math_question_active = False 
+                return 
+
+            correct = user_answer == correct_answer 
+
+        else: 
+            # Handle algebra answers 
+            try: 
+                user_answer = float(user_input) 
+                correct_answer = current_question.get("answer") 
+                if correct_answer is None: 
+                    answer_feedback = "Question error!" 
+                    feedback_timer = FPS * 2 
+                    math_question_active = False 
+                    return 
+
+                correct = abs(user_answer - correct_answer) < 0.001 
+            except ValueError: 
+                answer_feedback = "Invalid number!" 
+                feedback_timer = FPS * 2 
+                math_question_active = True 
+                return 
+
+    except Exception as e: 
+        print(f"Unexpected error: {e}") 
+        answer_feedback = "System error!" 
+        feedback_timer = FPS * 2 
+        math_question_active = False 
+        return 
+
+    # Handle correct/incorrect answers 
+    if correct: 
+        answer_feedback = "Correct!" 
+        boost_active = True 
+        boost_timer = boost_duration 
+        questions_answered += 1 
+        current_question["answered"] = True 
+        current_question["triggered"] = False 
+        current_question["incorrect"] = False 
+    else: 
+        answer_feedback = "Incorrect!" 
+        lives -= 1 
+        hurt_timer = HURT_DURATION 
+        current_question["triggered"] = False 
+        current_question["incorrect"] = True 
+        if lives <= 0: 
+            game_over = True 
+
+    # Reset for next question 
+    feedback_timer = FPS * 3 
+    math_question_active = False 
+    user_input = "" 
+
+def check_practice_answer(problem_index, user_answer, correct_answer): 
+    global practice_feedback, practice_answers_shown, feedback_display_time 
+    try: 
+        if isinstance(correct_answer, str): 
+            # For string answers (like "3/4" or "5") 
+            correct = user_answer.strip().lower() == correct_answer.lower() 
+        else: 
+            # For numeric answers 
+            user_num = float(Fraction(user_answer)) if "/" in user_answer else float(user_answer) 
+            correct = abs(user_num - float(correct_answer)) < 0.001 
+    except: 
+        correct = False 
+    practice_feedback[problem_index] = "Correct!" if correct else "Incorrect" 
+    if not correct: 
+        practice_answers_shown[problem_index] = False # Reset to show answer again 
+    feedback_display_time = FPS * 3 # Show feedback for 3 seconds 
+
+def reset_game(): 
+    global lives, game_over, questions_answered, water_rings, algebra_rings, obstacles 
+    global taniwha_rect, camera_x, current_level, level_complete, portal_active, game_complete
+    lives = 5 
+    game_over = False 
+    level_complete = False 
+    game_complete = False
+    questions_answered = 0 
+    portal_active = False 
+    water_rings = generate_water_rings() 
+    algebra_rings = generate_algebra_rings() 
+    obstacles = generate_obstacles() 
+    taniwha_rect.x = WINDOW_WIDTH//2 - 100 
+    taniwha_rect.y = WINDOW_HEIGHT//2 
+    camera_x = 0 
+    current_level = 1 
+
+# Main game loop 
+def main(): 
+    global current_scene, user_input, answer_feedback, math_question_active 
+    global current_question, lives, game_over, boost_active, boost_timer, camera_x 
+    global practice_question_index, questions_answered, water_rings, algebra_rings, obstacles 
+    global show_theory, current_level, level_complete, practice_inputs, practice_feedback 
+    global practice_answers_shown, feedback_display_time, show_help_popup, help_popup_type, game_complete
     
-    draw_taniwha()
-    draw_health()
-    handle_math_and_feedback()
-    
-    if current_level == 1:
-        draw_portal()
+    running = True 
+    while running: 
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: 
+                running = False 
 
-# Game logic functions
-def handle_movement(keys):
-    global camera_x, boost_timer, boost_active, current_scene, current_level, questions_answered
-    global obstacles, water_rings, algebra_rings, portal_active, level_complete
-    
-    if math_question_active or game_over or level_complete:
-        return
-    
-    speed = taniwha_speed + 3 if boost_active else taniwha_speed
+            elif event.type == pygame.MOUSEBUTTONDOWN: 
+                if current_scene == "menu": 
+                    mouse_pos = pygame.mouse.get_pos() 
+                    if start_button.collidepoint(mouse_pos): 
+                        current_scene = "level1" 
+                        reset_game() 
+                    elif practice_button.collidepoint(mouse_pos): 
+                        current_scene = "practice_hub" 
+                        practice_question_index = 0 
+                        show_theory = True 
+                        practice_inputs = {} 
+                        practice_feedback = {} 
+                        practice_answers_shown = {} 
 
-    if keys[pygame.K_LEFT]:
-        taniwha_rect.x -= speed
-    if keys[pygame.K_RIGHT]:
-        taniwha_rect.x += speed
-    if keys[pygame.K_UP]:
-        taniwha_rect.y -= speed
-    if keys[pygame.K_DOWN]:
-        taniwha_rect.y += speed
+                elif current_scene == "practice_hub": 
+                    mouse_pos = pygame.mouse.get_pos() 
+                    for button in practice_hub_buttons: 
+                        if button["rect"].collidepoint(mouse_pos): 
+                            current_scene = button["target"] 
+                            practice_question_index = 0 
+                            show_theory = True 
+                            practice_inputs = {} 
+                            practice_feedback = {} 
+                            practice_answers_shown = {} 
 
-    taniwha_rect.x = max(0, min(taniwha_rect.x, level_width - taniwha_rect.width))
-    taniwha_rect.y = max(0, min(taniwha_rect.y, WINDOW_HEIGHT - taniwha_rect.height))
+                elif current_scene in ["fractions_practice", "algebra_practice"]: 
+                    mouse_pos = pygame.mouse.get_pos() 
+                    # Check navigation buttons first 
+                    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 150, 60) 
+                    next_btn = pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 100, 150, 60) 
+                    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 100, 200, 60) 
+                    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 180, 200, 60) 
+                    if back_btn.collidepoint(mouse_pos): 
+                        practice_question_index = max(0, practice_question_index - 1) 
+                        practice_inputs = {} 
+                        practice_feedback = {} 
+                        practice_answers_shown = {} 
+                    elif next_btn.collidepoint(mouse_pos): 
+                        current_practice = fractions_practice if current_scene == "fractions_practice" else algebra_practice 
+                        max_index = len(current_practice)-1 
+                        if practice_question_index < max_index: 
+                            practice_question_index = min(max_index, practice_question_index + 1) 
+                            practice_inputs = {} 
+                            practice_feedback = {} 
+                            practice_answers_shown = {} 
+                    elif menu_btn.collidepoint(mouse_pos): 
+                        current_scene = "menu" 
+                    elif toggle_btn.collidepoint(mouse_pos): 
+                        show_theory = not show_theory 
+                        practice_inputs = {} 
+                        practice_feedback = {} 
+                        practice_answers_shown = {} 
+                    elif not show_theory: 
+                        # Check for input box clicks 
+                        current = fractions_practice if current_scene == "fractions_practice" else algebra_practice 
+                        current = current[practice_question_index] 
+                        y_pos = 100 
+                        for i in range(len(current["practice"])): 
+                            input_rect = pygame.Rect(550, y_pos, 150, 30) 
+                            check_btn = pygame.Rect(720, y_pos, 80, 30) 
+                            if input_rect.collidepoint(mouse_pos): 
+                                # Activate this input box 
+                                for j in practice_inputs: 
+                                    practice_inputs[j]["active"] = False 
+                                practice_inputs[i]["active"] = True 
+                            elif check_btn.collidepoint(mouse_pos): 
+                                # Check this answer 
+                                if i in practice_inputs and practice_inputs[i]["text"]: 
+                                    check_practice_answer(i, practice_inputs[i]["text"], current["practice"][i]["answer"]) 
+                            y_pos += 70 if practice_feedback.get(i) and practice_feedback[i] != "Correct!" else 50 
 
-    if current_level == 1 and portal_active:
-        portal_screen_rect = portal_rect.move(-camera_x, 0)
-        taniwha_screen_rect = taniwha_rect.move(-camera_x, 0)
-        if taniwha_screen_rect.colliderect(portal_screen_rect):
-            current_level = 2
-            questions_answered = 0
-            taniwha_rect.x = 100
-            taniwha_rect.y = WINDOW_HEIGHT//2
-            camera_x = 0
-            obstacles = generate_obstacles()
-            algebra_rings = generate_algebra_rings()
-    elif current_level == 2 and questions_answered >= total_questions:
-        level_complete = True
-
-    left_bound = WINDOW_WIDTH * 0.3
-    right_bound = WINDOW_WIDTH * 0.7
-    cx = taniwha_rect.centerx - camera_x
-    if cx > right_bound:
-        camera_x = taniwha_rect.centerx - right_bound
-    elif cx < left_bound:
-        camera_x = taniwha_rect.centerx - left_bound
-    camera_x = max(0, min(camera_x, level_width - WINDOW_WIDTH))
-
-    if boost_active:
-        boost_timer -= 1
-        if boost_timer <= 0:
-            boost_active = False
-
-def check_ring_triggers():
-    global math_question_active, user_input, answer_feedback, feedback_timer, current_question
-    
-    rings = water_rings if current_level == 1 else algebra_rings
-    for ring in rings:
-        ring_screen_rect = ring["rect"].move(-camera_x, 0)
-        taniwha_screen_rect = taniwha_rect.move(-camera_x, 0)
-        
-        if (taniwha_screen_rect.colliderect(ring_screen_rect) and 
-            not ring["triggered"] and not ring["answered"] and not ring.get("incorrect", False)):
-            ring["triggered"] = True
-            math_question_active = True
-            current_question = ring
-            user_input = ""
-            answer_feedback = ""
-            feedback_timer = 0
-            break
-
-def check_obstacle_collision():
-    global lives, game_over, hurt_timer
-    if math_question_active:
-        return
-    
-    # Get taniwha's hitbox (smaller than the actual image for better gameplay)
-    taniwha_hitbox = taniwha_rect.inflate(-50, -50)  # Make hitbox smaller by 50 pixels on each side
-    
-    for kind, rect in obstacles:
-        r = rect.move(-camera_x, 0)
-        if taniwha_hitbox.colliderect(r):  # Only collide if actually touching
-            lives -= 1
-            hurt_timer = HURT_DURATION
-            obstacles.remove((kind, rect))
-            if lives <= 0:
-                game_over = True
-            break
-
-def check_answer():
-    global answer_feedback, feedback_timer, math_question_active, questions_answered
-    global boost_active, boost_timer, lives, game_over, hurt_timer, current_question
-    global user_input  # Make sure we can modify the global user_input
-
-    # Initialize default values
-    correct = False
-    answer_feedback = ""
-    feedback_timer = 0
-
-    # Safety checks
-    if not current_question:
-        math_question_active = False
-        return
-
-    # Check for empty input
-    if not hasattr(check_answer, 'user_input_initialized'):
-        user_input = ""
-        setattr(check_answer, 'user_input_initialized', True)
-        
-    if user_input is None or not isinstance(user_input, str) or user_input.strip() == "":
-        answer_feedback = "Please enter an answer!"
-        feedback_timer = FPS * 2
-        math_question_active = True  # Keep the question active
-        return
-
-    # Process answer based on level
-    try:
-        if current_level == 1:
-            # Handle fraction answers
-            try:
-                # Try direct fraction parsing first
-                user_answer = Fraction(user_input)
-            except (ValueError, ZeroDivisionError):
-                try:
-                    # Try decimal conversion if fraction fails
-                    user_answer = Fraction(float(user_input)).limit_denominator()
-                except (ValueError, ZeroDivisionError):
-                    answer_feedback = "Invalid fraction format!"
-                    feedback_timer = FPS * 2
-                    math_question_active = True
-                    return
-
-            correct_answer = current_question.get("answer_frac")
-            if correct_answer is None:
-                answer_feedback = "Question error!"
-                feedback_timer = FPS * 2
-                math_question_active = False
-                return
-
-            correct = user_answer == correct_answer
-
-        else:
-            # Handle algebra answers
-            try:
-                user_answer = float(user_input)
-                correct_answer = current_question.get("answer")
-                if correct_answer is None:
-                    answer_feedback = "Question error!"
-                    feedback_timer = FPS * 2
-                    math_question_active = False
-                    return
-
-                correct = abs(user_answer - correct_answer) < 0.001
-            except ValueError:
-                answer_feedback = "Invalid number!"
-                feedback_timer = FPS * 2
-                math_question_active = True
-                return
-
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        answer_feedback = "System error!"
-        feedback_timer = FPS * 2
-        math_question_active = False
-        return
-
-    # Handle correct/incorrect answers
-    if correct:
-        answer_feedback = "Correct!"
-        boost_active = True
-        boost_timer = boost_duration
-        questions_answered += 1
-        current_question["answered"] = True
-        current_question["triggered"] = False
-        current_question["incorrect"] = False
-    else:
-        answer_feedback = "Incorrect!"
-        lives -= 1
-        hurt_timer = HURT_DURATION
-        current_question["triggered"] = False
-        current_question["incorrect"] = True
-        if lives <= 0:
-            game_over = True
-
-    # Reset for next question
-    feedback_timer = FPS * 3
-    math_question_active = False
-    user_input = ""
-
-def check_practice_answer(problem_index, user_answer, correct_answer):
-    global practice_feedback, practice_answers_shown, feedback_display_time
-    
-    try:
-        if isinstance(correct_answer, str):
-            # For string answers (like "3/4" or "5")
-            correct = user_answer.strip().lower() == correct_answer.lower()
-        else:
-            # For numeric answers
-            user_num = float(Fraction(user_answer)) if "/" in user_answer else float(user_answer)
-            correct = abs(user_num - float(correct_answer)) < 0.001
-    except:
-        correct = False
-    
-    practice_feedback[problem_index] = "Correct!" if correct else "Incorrect"
-    if not correct:
-        practice_answers_shown[problem_index] = False  # Reset to show answer again
-    feedback_display_time = FPS * 3  # Show feedback for 3 seconds
-
-def reset_game():
-    global lives, game_over, questions_answered, water_rings, algebra_rings, obstacles
-    global taniwha_rect, camera_x, current_level, level_complete, portal_active
-    
-    lives = 5
-    game_over = False
-    level_complete = False
-    questions_answered = 0
-    portal_active = False
-    water_rings = generate_water_rings()
-    algebra_rings = generate_algebra_rings()
-    obstacles = generate_obstacles()
-    taniwha_rect.x = WINDOW_WIDTH//2 - 100
-    taniwha_rect.y = WINDOW_HEIGHT//2
-    camera_x = 0
-    current_level = 1
-
-# Main game loop
-def main():
-    global current_scene, user_input, answer_feedback, math_question_active
-    global current_question, lives, game_over, boost_active, boost_timer, camera_x
-    global practice_question_index, questions_answered, water_rings, algebra_rings, obstacles
-    global show_theory, current_level, level_complete, practice_inputs, practice_feedback
-    global practice_answers_shown, feedback_display_time
-
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if current_scene == "menu":
-                    mouse_pos = pygame.mouse.get_pos()
-                    if start_button.collidepoint(mouse_pos):
-                        current_scene = "level1"
-                        reset_game()
-                    elif practice_button.collidepoint(mouse_pos):
-                        current_scene = "practice_hub"
-                        practice_question_index = 0
-                        show_theory = True
-                        practice_inputs = {}
-                        practice_feedback = {}
-                        practice_answers_shown = {}
-
-                elif current_scene == "practice_hub":
-                    mouse_pos = pygame.mouse.get_pos()
-                    for button in practice_hub_buttons:
-                        if button["rect"].collidepoint(mouse_pos):
-                            current_scene = button["target"]
-                            practice_question_index = 0
-                            show_theory = True
-                            practice_inputs = {}
-                            practice_feedback = {}
-                            practice_answers_shown = {}
-
-                elif current_scene in ["fractions_practice", "algebra_practice"]:
-                    mouse_pos = pygame.mouse.get_pos()
+                elif current_scene == "level1": 
+                    mouse_pos = pygame.mouse.get_pos() 
+                    if help_button_rect.collidepoint(mouse_pos) and not show_help_popup:
+                        show_help_popup = True
+                        help_popup_type = "fractions" if current_level == 1 else "algebra"
+                    elif show_help_popup:
+                        # Handle help popup clicks
+                        close_btn, toggle_btn = draw_help_popup()
+                        if close_btn.collidepoint(mouse_pos):
+                            show_help_popup = False
+                        elif toggle_btn.collidepoint(mouse_pos):
+                            help_popup_type = "algebra" if help_popup_type == "fractions" else "fractions"
                     
-                    # Check navigation buttons first
-                    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 150, 60)
-                    next_btn = pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 100, 150, 60)
-                    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 100, 200, 60)
-                    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 180, 200, 60)
-                    
-                    if back_btn.collidepoint(mouse_pos):
-                        practice_question_index = max(0, practice_question_index - 1)
-                        practice_inputs = {}
-                        practice_feedback = {}
-                        practice_answers_shown = {}
-                    elif next_btn.collidepoint(mouse_pos):
-                        current_practice = fractions_practice if current_scene == "fractions_practice" else algebra_practice
-                        max_index = len(current_practice)-1
-                        if practice_question_index < max_index:
-                            practice_question_index = min(max_index, practice_question_index + 1)
-                            practice_inputs = {}
-                            practice_feedback = {}
-                            practice_answers_shown = {}
-                    elif menu_btn.collidepoint(mouse_pos):
-                        current_scene = "menu"
-                    elif toggle_btn.collidepoint(mouse_pos):
-                        show_theory = not show_theory
-                        practice_inputs = {}
-                        practice_feedback = {}
-                        practice_answers_shown = {}
-                    elif not show_theory:
-                        # Check for input box clicks
-                        current = fractions_practice if current_scene == "fractions_practice" else algebra_practice
-                        current = current[practice_question_index]
-                        
-                        y_pos = 100
-                        for i in range(len(current["practice"])):
-                            input_rect = pygame.Rect(550, y_pos, 150, 30)
-                            check_btn = pygame.Rect(720, y_pos, 80, 30)
-                            
-                            if input_rect.collidepoint(mouse_pos):
-                                # Activate this input box
-                                for j in practice_inputs:
-                                    practice_inputs[j]["active"] = False
-                                practice_inputs[i]["active"] = True
-                            elif check_btn.collidepoint(mouse_pos):
-                                # Check this answer
-                                if i in practice_inputs and practice_inputs[i]["text"]:
-                                    check_practice_answer(i, practice_inputs[i]["text"], current["practice"][i]["answer"])
-                            y_pos += 70 if practice_feedback.get(i) and practice_feedback[i] != "Correct!" else 50
+                    if game_over: 
+                        yes_btn, no_btn = draw_game_over() 
+                        if yes_btn.collidepoint(mouse_pos): 
+                            reset_game() 
+                            current_scene = "level1" 
+                        elif no_btn.collidepoint(mouse_pos): 
+                            current_scene = "menu" 
+                            game_over = False 
+                    elif level_complete: 
+                        yes_btn, no_btn = draw_level_complete() 
+                        if yes_btn.collidepoint(mouse_pos): 
+                            reset_game() 
+                            current_scene = "level1" 
+                        elif no_btn.collidepoint(mouse_pos): 
+                            current_scene = "menu" 
+                            level_complete = False 
 
-                elif game_over:
-                    yes_btn, no_btn = draw_game_over()
-                    mouse_pos = pygame.mouse.get_pos()
-                    if yes_btn.collidepoint(mouse_pos):
-                        reset_game()
-                        current_scene = "level1"
-                    elif no_btn.collidepoint(mouse_pos):
-                        current_scene = "menu"
-                        game_over = False
-                
-                elif level_complete:
-                    yes_btn, no_btn = draw_level_complete()
-                    mouse_pos = pygame.mouse.get_pos()
-                    if yes_btn.collidepoint(mouse_pos):
-                        reset_game()
-                        current_scene = "level1"
-                    elif no_btn.collidepoint(mouse_pos):
-                        current_scene = "menu"
-                        level_complete = False
+            elif event.type == pygame.KEYDOWN: 
+                if current_scene == "level1" and math_question_active: 
+                    if event.key == pygame.K_RETURN: 
+                        check_answer() 
+                    elif event.key == pygame.K_BACKSPACE: 
+                        user_input = user_input[:-1] 
+                    elif event.unicode.isdigit() or event.unicode in ["/", ".", "-"]: 
+                        user_input += event.unicode 
+                elif current_scene in ["fractions_practice", "algebra_practice"] and not show_theory: 
+                    # Handle practice problem input 
+                    for i in practice_inputs: 
+                        if practice_inputs[i]["active"]: 
+                            if event.key == pygame.K_RETURN: 
+                                current = fractions_practice if current_scene == "fractions_practice" else algebra_practice 
+                                current = current[practice_question_index] 
+                                if i < len(current["practice"]): 
+                                    check_practice_answer(i, practice_inputs[i]["text"], current["practice"][i]["answer"]) 
+                            elif event.key == pygame.K_BACKSPACE: 
+                                practice_inputs[i]["text"] = practice_inputs[i]["text"][:-1] 
+                            elif event.unicode.isdigit() or event.unicode in ["/", ".", "-", " "]: 
+                                practice_inputs[i]["text"] += event.unicode 
+                            break 
+                elif current_scene == "level1" and show_help_popup:
+                    if event.key == pygame.K_ESCAPE:
+                        show_help_popup = False
 
-            elif event.type == pygame.KEYDOWN:
-                if current_scene == "level1" and math_question_active:
-                    if event.key == pygame.K_RETURN:
-                        check_answer()
-                    elif event.key == pygame.K_BACKSPACE:
-                        user_input = user_input[:-1]
-                    elif event.unicode.isdigit() or event.unicode in ["/", ".", "-"]:
-                        user_input += event.unicode
-                elif current_scene in ["fractions_practice", "algebra_practice"] and not show_theory:
-                    # Handle practice problem input
-                    for i in practice_inputs:
-                        if practice_inputs[i]["active"]:
-                            if event.key == pygame.K_RETURN:
-                                current = fractions_practice if current_scene == "fractions_practice" else algebra_practice
-                                current = current[practice_question_index]
-                                if i < len(current["practice"]):
-                                    check_practice_answer(i, practice_inputs[i]["text"], current["practice"][i]["answer"])
-                            elif event.key == pygame.K_BACKSPACE:
-                                practice_inputs[i]["text"] = practice_inputs[i]["text"][:-1]
-                            elif event.unicode.isdigit() or event.unicode in ["/", ".", "-", " "]:
-                                practice_inputs[i]["text"] += event.unicode
-                            break
+        keys = pygame.key.get_pressed() 
+        if current_scene == "menu": 
+            draw_menu() 
+        elif current_scene == "practice_hub": 
+            draw_practice_hub() 
+        elif current_scene == "fractions_practice": 
+            draw_fractions_practice() 
+        elif current_scene == "algebra_practice": 
+            draw_algebra_practice() 
+        elif current_scene == "level1": 
+            if game_over: 
+                draw_game_over() 
+            elif level_complete: 
+                draw_level_complete() 
+            else: 
+                if not math_question_active and not show_help_popup: 
+                    handle_movement(keys) 
+                    check_obstacle_collision() 
+                    check_ring_triggers() 
+                draw_level() 
+                if show_help_popup:
+                    draw_help_popup()
 
-        keys = pygame.key.get_pressed()
-        if current_scene == "menu":
-            draw_menu()
-        elif current_scene == "practice_hub":
-            draw_practice_hub()
-        elif current_scene == "fractions_practice":
-            draw_fractions_practice()
-        elif current_scene == "algebra_practice":
-            draw_algebra_practice()
-        elif current_scene == "level1":
-            if game_over:
-                draw_game_over()
-            elif level_complete:
-                draw_level_complete()
-            else:
-                if not math_question_active:
-                    handle_movement(keys)
-                    check_obstacle_collision()
-                check_ring_triggers()
-                draw_level()
+        # Decrease feedback display timer if active 
+        if feedback_display_time > 0: 
+            feedback_display_time -= 1 
+            if feedback_display_time <= 0: 
+                # Clear feedback when timer runs out 
+                for i in practice_feedback: 
+                    practice_feedback[i] = "" 
 
-        # Decrease feedback display timer if active
-        if feedback_display_time > 0:
-            feedback_display_time -= 1
-            if feedback_display_time <= 0:
-                # Clear feedback when timer runs out
-                for i in practice_feedback:
-                    practice_feedback[i] = ""
+        pygame.display.flip() 
+        clock.tick(FPS) 
 
-        pygame.display.flip()
-        clock.tick(FPS)
+    pygame.quit() 
+    sys.exit() 
 
-    pygame.quit()
-    sys.exit()
-
-if __name__ == "__main__":
+if __name__ == "__main__": 
     main()
