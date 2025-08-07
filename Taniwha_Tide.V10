@@ -92,8 +92,8 @@ background_image = load_image("Lvl1_water_background.png", WATER_BLUE, (WINDOW_W
 algebra_bg_image = load_image("algebra_background.png", (50, 50, 80), (WINDOW_WIDTH, WINDOW_HEIGHT), False)
 start_bg_image = load_image("Start_ocean_background.png", WATER_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
 taniwha_bg_image = load_image("Taniwha_background.png", TANIWHA_GREEN, (400, 400))  # Larger size
-taniwha_head_bg_image = load_image("Taniwha_head_background.png", TANIWHA_GREEN, (300, 200))
-start_button_img = load_image("Start_button.png", BUTTON_COLOR, (300, 80))  # Larger size
+taniwha_head_bg_image = load_image("Taniwha_head_background.png", TANIWHA_GREEN, (300, 300))
+start_button_img = load_image("Start_button.png", BUTTON_COLOR, (300, 200))  # Larger size
 practice_button_img = load_image("Practice_Hub.png", PRACTICE_BUTTON_COLOR, (80, 80))
 portal_image = load_image("Water_portal.png", YELLOW, (120, 150))
 complete_bg_image = load_image("Complete_game_background.png", SEA_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
@@ -108,7 +108,7 @@ next_button_img = load_image("next_button.png", PRACTICE_BUTTON_COLOR, (150, 60)
 previous_button_img = load_image("Previous_button.png", PRACTICE_BUTTON_COLOR, (150, 60))
 show_problems_img = load_image("Show_problems.png", PRACTICE_BUTTON_COLOR, (200, 60))
 show_theory_img = load_image("Show_theory.png", PRACTICE_BUTTON_COLOR, (200, 60))
-help_button_img = load_image("Help_button.png", DARK_NAVY, (30, 30))
+help_button_img = load_image("Help_button.png", DARK_NAVY, (50, 50))
 
 taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)) 
 taniwha_speed = 5 
