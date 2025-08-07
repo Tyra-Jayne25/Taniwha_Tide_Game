@@ -41,9 +41,14 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Taniwha Tide") 
 clock = pygame.time.Clock() 
 
-# Fonts 
-title_font = pygame.font.SysFont("Arial", 72, bold=True) 
-button_font = pygame.font.SysFont("Arial", 36) 
+# Fonts - Try to load a custom font, fall back to Arial if not available
+try:
+    title_font = pygame.font.Font("OceanFont.ttf", 72)  # Replace with your ocean-themed font
+    button_font = pygame.font.Font("OceanFont.ttf", 36)
+except:
+    title_font = pygame.font.SysFont("Arial", 72, bold=True)
+    button_font = pygame.font.SysFont("Arial", 36)
+
 health_font = pygame.font.SysFont("Arial", 28) 
 math_font = pygame.font.SysFont("Arial", 24) 
 question_font = pygame.font.SysFont("Arial", 32, bold=True) 
@@ -52,27 +57,29 @@ practice_font = pygame.font.SysFont("Arial", 20)
 small_font = pygame.font.SysFont("Arial", 14)
 
 # Game objects 
-start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60) 
+start_button = pygame.Rect(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT//2 + 50, 300, 80)  # Larger start button
 practice_button = pygame.Rect(20, 20, 80, 80)  # Moved to top-left corner
 
 # Helper function to load images with fallback
-def load_image(filename, default_color, size=None):
+def load_image(filename, default_color, size=None, convert_alpha=True):
     try:
-        image = pygame.image.load(filename).convert_alpha()
+        if convert_alpha:
+            image = pygame.image.load(filename).convert_alpha()
+        else:
+            image = pygame.image.load(filename).convert()
         if size:
             image = pygame.transform.scale(image, size)
         return image
-    except:
-        print(f"Warning: Could not load image {filename} - using colored placeholder")
+    except Exception as e:
+        print(f"Warning: Could not load image {filename} - {str(e)}")
         if size:
             surface = pygame.Surface(size, pygame.SRCALPHA)
         else:
-            # If no size specified, use a reasonable default
             surface = pygame.Surface((100, 100), pygame.SRCALPHA)
         surface.fill(default_color)
         return surface
 
-# Load images with fallback
+# Load all game images with fallbacks
 taniwha_img = load_image("Taniwha.png", TANIWHA_GREEN, (250, 250))
 taniwha_hurt_img = taniwha_img.copy() 
 hurt_overlay = pygame.Surface(taniwha_img.get_size(), pygame.SRCALPHA) 
@@ -81,13 +88,27 @@ taniwha_hurt_img.blit(hurt_overlay, (0, 0), special_flags=pygame.BLEND_MULT)
 
 net_image = load_image("net_obstacle.png", BROWN, (90, 90))
 jellyfish_image = load_image("jelly_obstacle.png", PINK, (90, 90))
-background_image = load_image("Lvl1_water_background.png", WATER_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT))
-algebra_bg_image = load_image("algebra_background.png", (50, 50, 80), (WINDOW_WIDTH, WINDOW_HEIGHT))
-start_bg_image = load_image("Start_ocean_background.png", WATER_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT))
-taniwha_bg_image = load_image("Taniwha_background.png", TANIWHA_GREEN, (300, 300))
-start_button_img = load_image("Start_button.png", BUTTON_COLOR, (200, 60))
+background_image = load_image("Lvl1_water_background.png", WATER_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
+algebra_bg_image = load_image("algebra_background.png", (50, 50, 80), (WINDOW_WIDTH, WINDOW_HEIGHT), False)
+start_bg_image = load_image("Start_ocean_background.png", WATER_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
+taniwha_bg_image = load_image("Taniwha_background.png", TANIWHA_GREEN, (400, 400))  # Larger size
+taniwha_head_bg_image = load_image("Taniwha_head_background.png", TANIWHA_GREEN, (300, 200))
+start_button_img = load_image("Start_button.png", BUTTON_COLOR, (300, 80))  # Larger size
 practice_button_img = load_image("Practice_Hub.png", PRACTICE_BUTTON_COLOR, (80, 80))
-portal_image = load_image("Water_portal.png", YELLOW, (110, 250))
+portal_image = load_image("Water_portal.png", YELLOW, (120, 150))
+complete_bg_image = load_image("Complete_game_background.png", SEA_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
+game_over_bg_image = load_image("Game_over_background.png", (50, 0, 0), (WINDOW_WIDTH, WINDOW_HEIGHT), False)
+practice_hub_bg_image = load_image("Practice_hub_background.png", HUB_BACKGROUND, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
+
+# Load practice hub button images
+fractions_button_img = load_image("Fractions_practice_button.png", PRACTICE_BUTTON_COLOR, (400, 60))
+algebra_button_img = load_image("Algebra_practice_button.png", PRACTICE_BUTTON_COLOR, (400, 60))
+back_button_img = load_image("Backtomenu_button.png", PRACTICE_BUTTON_COLOR, (400, 60))
+next_button_img = load_image("next_button.png", PRACTICE_BUTTON_COLOR, (150, 60))
+previous_button_img = load_image("Previous_button.png", PRACTICE_BUTTON_COLOR, (150, 60))
+show_problems_img = load_image("Show_problems.png", PRACTICE_BUTTON_COLOR, (200, 60))
+show_theory_img = load_image("Show_theory.png", PRACTICE_BUTTON_COLOR, (200, 60))
+help_button_img = load_image("Help_button.png", DARK_NAVY, (30, 30))
 
 taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)) 
 taniwha_speed = 5 
@@ -432,12 +453,17 @@ def draw_menu():
     # Draw the ocean background
     screen.blit(start_bg_image, (0, 0))
     
-    # Draw the Taniwha background image (wrapped around the start button)
-    taniwha_bg_pos = (WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT//2 - 50)
+    # Draw the larger Taniwha background image centered
+    taniwha_bg_pos = (WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 - 150)
     screen.blit(taniwha_bg_image, taniwha_bg_pos)
     
+    # Draw the Taniwha head wrapping around the start button
+    head_pos = (WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT//2 - 50)
+    screen.blit(taniwha_head_bg_image, head_pos)
+    
+    # Draw title on top of Taniwha
     title = title_font.render("Taniwha Tide", True, WHITE) 
-    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 150))) 
+    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 200))) 
     
     mouse_pos = pygame.mouse.get_pos() 
     
@@ -445,8 +471,8 @@ def draw_menu():
     hover = start_button.collidepoint(mouse_pos)
     if hover:
         # Slightly enlarge button when hovered
-        hover_img = pygame.transform.scale(start_button_img, (210, 63))
-        screen.blit(hover_img, (start_button.x-5, start_button.y-2))
+        hover_img = pygame.transform.scale(start_button_img, (310, 85))
+        screen.blit(hover_img, (start_button.x-5, start_button.y-3))
     else:
         screen.blit(start_button_img, start_button)
     
@@ -460,15 +486,29 @@ def draw_menu():
         screen.blit(practice_button_img, practice_button)
 
 def draw_practice_hub(): 
-    screen.fill(HUB_BACKGROUND) 
+    # Draw the practice hub background
+    screen.blit(practice_hub_bg_image, (0, 0))
+    
     title = title_font.render("Practice Hub", True, WHITE) 
     screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 150))) 
     mouse_pos = pygame.mouse.get_pos() 
+    
+    # Draw practice buttons with images
     for button in practice_hub_buttons: 
-        col = PRACTICE_BUTTON_HOVER if button["rect"].collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR 
-        pygame.draw.rect(screen, col, button["rect"]) 
-        txt = button_font.render(button["text"], True, WHITE) 
-        screen.blit(txt, txt.get_rect(center=button["rect"].center)) 
+        hover = button["rect"].collidepoint(mouse_pos)
+        if button["text"] == "Fractions Practice":
+            img = fractions_button_img
+        elif button["text"] == "Algebra Practice":
+            img = algebra_button_img
+        else:  # Back to Menu
+            img = back_button_img
+            
+        if hover:
+            # Slightly enlarge button when hovered
+            hover_img = pygame.transform.scale(img, (button["rect"].width+10, button["rect"].height+5))
+            screen.blit(hover_img, (button["rect"].x-5, button["rect"].y-3))
+        else:
+            screen.blit(img, button["rect"])
 
 def draw_fractions_practice(): 
     global show_theory, practice_inputs, practice_feedback, practice_answers_shown, practice_question_index, feedback_display_time 
@@ -640,27 +680,41 @@ def draw_practice_navigation_buttons():
     mouse_pos = pygame.mouse.get_pos() 
 
     # Back button (previous section) 
-    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if back_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, back_btn) 
-    back_txt = button_font.render("Previous", True, WHITE) 
-    screen.blit(back_txt, back_txt.get_rect(center=back_btn.center)) 
+    if previous_button_img:
+        screen.blit(previous_button_img, back_btn)
+    else:
+        pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if back_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, back_btn) 
+        back_txt = button_font.render("Previous", True, WHITE) 
+        screen.blit(back_txt, back_txt.get_rect(center=back_btn.center)) 
 
     # Next button (only show if there is a next section) 
-    current_practice = fractions_practice if current_scene == "fractions_practice" else algebra_practice 
-    max_index = len(current_practice)-1 
-    if practice_question_index < max_index: 
-        pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if next_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, next_btn) 
-        next_txt = button_font.render("Next", True, WHITE) 
-        screen.blit(next_txt, next_txt.get_rect(center=next_btn.center)) 
+    current_practice = fractions_practice if current_scene == "fractions_practice" else algebra_practice
+    max_index = len(current_practice)-1
+    if practice_question_index < max_index:
+        if next_button_img:
+            screen.blit(next_button_img, next_btn)
+        else:
+            pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if next_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, next_btn) 
+            next_txt = button_font.render("Next", True, WHITE) 
+            screen.blit(next_txt, next_txt.get_rect(center=next_btn.center)) 
 
     # Back to Menu button 
-    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if menu_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, menu_btn) 
-    menu_txt = button_font.render("Back to Menu", True, WHITE) 
-    screen.blit(menu_txt, menu_txt.get_rect(center=menu_btn.center)) 
+    if back_button_img:
+        screen.blit(back_button_img, menu_btn)
+    else:
+        pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if menu_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, menu_btn) 
+        menu_txt = button_font.render("Back to Menu", True, WHITE) 
+        screen.blit(menu_txt, menu_txt.get_rect(center=menu_btn.center)) 
 
     # Toggle Theory/Practice button 
-    pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if toggle_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, toggle_btn) 
-    toggle_txt = button_font.render("Show Problems" if show_theory else "Show Theory", True, WHITE) 
-    screen.blit(toggle_txt, toggle_txt.get_rect(center=toggle_btn.center)) 
+    if show_theory and show_problems_img:
+        screen.blit(show_problems_img, toggle_btn)
+    elif not show_theory and show_theory_img:
+        screen.blit(show_theory_img, toggle_btn)
+    else:
+        pygame.draw.rect(screen, PRACTICE_BUTTON_HOVER if toggle_btn.collidepoint(mouse_pos) else PRACTICE_BUTTON_COLOR, toggle_btn) 
+        toggle_txt = button_font.render("Show Problems" if show_theory else "Show Theory", True, WHITE) 
+        screen.blit(toggle_txt, toggle_txt.get_rect(center=toggle_btn.center)) 
 
 def draw_health(): 
     lbl = health_font.render(f"Lives: {lives}", True, RED) 
@@ -692,7 +746,7 @@ def handle_math_and_feedback():
             answer_feedback = "" 
 
 def draw_game_over(): 
-    screen.fill(SEA_BLUE) 
+    screen.blit(game_over_bg_image, (0, 0))
     over = title_font.render("GAME OVER", True, RED) 
     screen.blit(over, over.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 50))) 
     # Replay option buttons 
@@ -711,7 +765,7 @@ def draw_game_over():
 
 def draw_level_complete(): 
     global game_complete
-    screen.fill(SEA_BLUE) 
+    screen.blit(complete_bg_image, (0, 0))
     
     if current_level == 2:
         game_complete = True
@@ -810,11 +864,20 @@ def draw_taniwha():
 def draw_help_button():
     mouse_pos = pygame.mouse.get_pos()
     hover = help_button_rect.collidepoint(mouse_pos)
-    color = (0, 0, 150) if hover else DARK_NAVY
-    pygame.draw.rect(screen, color, help_button_rect)
-    question_mark = button_font.render("?", True, WHITE)
-    screen.blit(question_mark, (help_button_rect.centerx - question_mark.get_width()//2, 
-                               help_button_rect.centery - question_mark.get_height()//2))
+    
+    if help_button_img:
+        if hover:
+            # Slightly enlarge button when hovered
+            hover_img = pygame.transform.scale(help_button_img, (35, 35))
+            screen.blit(hover_img, (help_button_rect.x-3, help_button_rect.y-3))
+        else:
+            screen.blit(help_button_img, help_button_rect)
+    else:
+        color = (0, 0, 150) if hover else DARK_NAVY
+        pygame.draw.rect(screen, color, help_button_rect)
+        question_mark = button_font.render("?", True, WHITE)
+        screen.blit(question_mark, (help_button_rect.centerx - question_mark.get_width()//2, 
+                                   help_button_rect.centery - question_mark.get_height()//2))
 
 def draw_help_popup():
     # Draw semi-transparent overlay
