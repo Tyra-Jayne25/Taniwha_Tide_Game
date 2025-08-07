@@ -55,73 +55,39 @@ small_font = pygame.font.SysFont("Arial", 14)
 start_button = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2 + 50, 200, 60) 
 practice_button = pygame.Rect(20, 20, 80, 80)  # Moved to top-left corner
 
-# Load images 
-try: 
-    # Main game images
-    taniwha_img = pygame.image.load("Taniwha.png").convert_alpha() 
-    taniwha_img = pygame.transform.scale(taniwha_img, (250, 250)) 
-    taniwha_hurt_img = taniwha_img.copy() 
-    hurt_overlay = pygame.Surface(taniwha_img.get_size(), pygame.SRCALPHA) 
-    hurt_overlay.fill((255, 0, 0, 128)) 
-    taniwha_hurt_img.blit(hurt_overlay, (0, 0), special_flags=pygame.BLEND_MULT) 
-    
-    net_image = pygame.image.load("net_obstacle.png").convert_alpha() 
-    net_image = pygame.transform.scale(net_image, (90, 90)) 
-    jellyfish_image = pygame.image.load("jelly_obstacle.png").convert_alpha() 
-    jellyfish_image = pygame.transform.scale(jellyfish_image, (90, 90)) 
-    
-    # New background images
-    background_image = pygame.image.load("Lvl1_water_backgroundrhm.png").convert() 
-    background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
-    algebra_bg_image = pygame.image.load("algebra_background.png").convert()
-    algebra_bg_image = pygame.transform.scale(algebra_bg_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
-    
-    # New menu images
-    start_bg_image = pygame.image.load("Start_ocean_background.png").convert()
-    start_bg_image = pygame.transform.scale(start_bg_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
-    taniwha_bg_image = pygame.image.load("Taniwha_background.png").convert_alpha()
-    taniwha_bg_image = pygame.transform.scale(taniwha_bg_image, (300, 300))
-    
-    # New button images
-    start_button_img = pygame.image.load("Start_button.png").convert_alpha()
-    start_button_img = pygame.transform.scale(start_button_img, (200, 60))
-    practice_button_img = pygame.image.load("Practice_Hub.png").convert_alpha()
-    practice_button_img = pygame.transform.scale(practice_button_img, (80, 80))
-    
-    # New portal image
-    portal_image = pygame.image.load("Water_portal.png").convert_alpha()
-    portal_image = pygame.transform.scale(portal_image, (120, 150))
-    
-except: 
-    # Fallback if images not found 
-    taniwha_img = pygame.Surface((250, 250)) 
-    taniwha_img.fill(TANIWHA_GREEN) 
-    taniwha_hurt_img = taniwha_img.copy() 
-    hurt_overlay = pygame.Surface(taniwha_img.get_size()) 
-    hurt_overlay.fill(RED) 
-    taniwha_hurt_img.blit(hurt_overlay, (0, 0)) 
-    
-    net_image = pygame.Surface((90, 90)) 
-    net_image.fill(BROWN) 
-    jellyfish_image = pygame.Surface((90, 90)) 
-    jellyfish_image.fill(PINK) 
-    
-    background_image = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT)) 
-    background_image.fill(WATER_BLUE)
-    algebra_bg_image = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-    algebra_bg_image.fill((50, 50, 80))
-    
-    start_bg_image = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-    start_bg_image.fill(WATER_BLUE)
-    taniwha_bg_image = pygame.Surface((300, 300), pygame.SRCALPHA)
-    
-    start_button_img = pygame.Surface((200, 60))
-    start_button_img.fill(BUTTON_COLOR)
-    practice_button_img = pygame.Surface((80, 80))
-    practice_button_img.fill(PRACTICE_BUTTON_COLOR)
-    
-    portal_image = pygame.Surface((120, 150), pygame.SRCALPHA)
-    pygame.draw.ellipse(portal_image, YELLOW, (0, 0, 120, 150), 5)
+# Helper function to load images with fallback
+def load_image(filename, default_color, size=None):
+    try:
+        image = pygame.image.load(filename).convert_alpha()
+        if size:
+            image = pygame.transform.scale(image, size)
+        return image
+    except:
+        print(f"Warning: Could not load image {filename} - using colored placeholder")
+        if size:
+            surface = pygame.Surface(size, pygame.SRCALPHA)
+        else:
+            # If no size specified, use a reasonable default
+            surface = pygame.Surface((100, 100), pygame.SRCALPHA)
+        surface.fill(default_color)
+        return surface
+
+# Load images with fallback
+taniwha_img = load_image("Taniwha.png", TANIWHA_GREEN, (250, 250))
+taniwha_hurt_img = taniwha_img.copy() 
+hurt_overlay = pygame.Surface(taniwha_img.get_size(), pygame.SRCALPHA) 
+hurt_overlay.fill((255, 0, 0, 128)) 
+taniwha_hurt_img.blit(hurt_overlay, (0, 0), special_flags=pygame.BLEND_MULT) 
+
+net_image = load_image("net_obstacle.png", BROWN, (90, 90))
+jellyfish_image = load_image("jelly_obstacle.png", PINK, (90, 90))
+background_image = load_image("Lvl1_water_background.png", WATER_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT))
+algebra_bg_image = load_image("algebra_background.png", (50, 50, 80), (WINDOW_WIDTH, WINDOW_HEIGHT))
+start_bg_image = load_image("Start_ocean_background.png", WATER_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT))
+taniwha_bg_image = load_image("Taniwha_background.png", TANIWHA_GREEN, (300, 300))
+start_button_img = load_image("Start_button.png", BUTTON_COLOR, (200, 60))
+practice_button_img = load_image("Practice_Hub.png", PRACTICE_BUTTON_COLOR, (80, 80))
+portal_image = load_image("Water_portal.png", YELLOW, (120, 150))
 
 taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)) 
 taniwha_speed = 5 
@@ -936,20 +902,8 @@ def draw_level():
     if current_level == 1: 
         draw_portal()
     
-    draw_water_rings() 
-    for kind, rect in obstacles: 
-        r = rect.move(-camera_x, 0) 
-        if kind == "net": 
-            screen.blit(net_image, r) 
-        else: 
-            screen.blit(jellyfish_image, r) 
-    draw_taniwha() 
-    draw_health() 
-    handle_math_and_feedback() 
-    draw_help_button()
-    
-    if current_level == 1: 
-        draw_portal() 
+    if show_help_popup:
+        draw_help_popup()
 
 # Game logic functions 
 def handle_movement(keys): 
