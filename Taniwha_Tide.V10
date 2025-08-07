@@ -87,7 +87,7 @@ start_bg_image = load_image("Start_ocean_background.png", WATER_BLUE, (WINDOW_WI
 taniwha_bg_image = load_image("Taniwha_background.png", TANIWHA_GREEN, (300, 300))
 start_button_img = load_image("Start_button.png", BUTTON_COLOR, (200, 60))
 practice_button_img = load_image("Practice_Hub.png", PRACTICE_BUTTON_COLOR, (80, 80))
-portal_image = load_image("Water_portal.png", YELLOW, (120, 150))
+portal_image = load_image("Water_portal.png", YELLOW, (110, 250))
 
 taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)) 
 taniwha_speed = 5 
