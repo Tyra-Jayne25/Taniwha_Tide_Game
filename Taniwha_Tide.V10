@@ -101,9 +101,9 @@ game_over_bg_image = load_image("Game_over_background.png", (50, 0, 0), (WINDOW_
 practice_hub_bg_image = load_image("Practice_hub_background.png", HUB_BACKGROUND, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
 
 # Load practice hub button images
-fractions_button_img = load_image("Fractions_practice_button.png", PRACTICE_BUTTON_COLOR, (400, 60))
-algebra_button_img = load_image("Algebra_practice_button.png", PRACTICE_BUTTON_COLOR, (400, 60))
-back_button_img = load_image("Backtomenu_button.png", PRACTICE_BUTTON_COLOR, (400, 60))
+fractions_button_img = load_image("Fractions_practice_button.png", PRACTICE_BUTTON_COLOR, (400, 80))
+algebra_button_img = load_image("Algebra_practice_button.png", PRACTICE_BUTTON_COLOR, (400, 80))
+back_button_img = load_image("Backtomenu_button.png", PRACTICE_BUTTON_COLOR, (400, 100))
 next_button_img = load_image("next_button.png", PRACTICE_BUTTON_COLOR, (150, 60))
 previous_button_img = load_image("Previous_button.png", PRACTICE_BUTTON_COLOR, (150, 60))
 show_problems_img = load_image("Show_problems.png", PRACTICE_BUTTON_COLOR, (200, 60))
