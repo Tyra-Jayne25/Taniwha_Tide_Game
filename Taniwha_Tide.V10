@@ -36,6 +36,17 @@ THEORY_BACKGROUND = (60, 90, 130)
 INPUT_BOX_COLOR = (200, 200, 200) 
 DARK_NAVY = (0, 0, 100)
 
+#button sizes
+START_BUTTON_SIZE = (400, 150)  # More reasonable size for our window
+PRACTICE_BUTTON_SIZE = (80, 80)  # Practice hub button in corner
+FRACTIONS_BTN_SIZE = (400, 100)  # Practice hub buttons
+ALGEBRA_BTN_SIZE = (400, 100)
+BACK_BTN_SIZE = (400, 100)
+NAV_BTN_SIZE = (150, 60)  # Next/previous buttons
+THEORY_BTN_SIZE = (300, 60)  # Show theory/problems buttons
+HELP_BTN_SIZE = (100, 50)  # Help button
+TANIWHA_BG_SIZE = (600, 600)
+
 # Create game window 
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) 
 pygame.display.set_caption("Taniwha Tide") 
@@ -57,8 +68,10 @@ practice_font = pygame.font.SysFont("Arial", 20)
 small_font = pygame.font.SysFont("Arial", 14)
 
 # Game objects 
-start_button = pygame.Rect(WINDOW_WIDTH//2 - 352, WINDOW_HEIGHT//2 + 50, 705, 265)  # New start button size
-practice_button = pygame.Rect(20, 20, 80, 80)  # Moved to top-left corner
+start_button = pygame.Rect(WINDOW_WIDTH//2 - START_BUTTON_SIZE[0]//2, 
+                          WINDOW_HEIGHT//2 + 50, 
+                          START_BUTTON_SIZE[0], START_BUTTON_SIZE[1])
+practice_button = pygame.Rect(20, 20, PRACTICE_BUTTON_SIZE[0], PRACTICE_BUTTON_SIZE[1])
 
 # Helper function to load images with fallback
 def load_image(filename, default_color, size=None, convert_alpha=True):
@@ -82,33 +95,30 @@ def load_image(filename, default_color, size=None, convert_alpha=True):
 # Load all game images with fallbacks
 taniwha_img = load_image("Taniwha.png", TANIWHA_GREEN, (250, 250))
 taniwha_hurt_img = taniwha_img.copy() 
-hurt_overlay = pygame.Surface(taniwha_img.get_size(), pygame.SRCALPHA) 
-hurt_overlay.fill((255, 0, 0, 128)) 
-taniwha_hurt_img.blit(hurt_overlay, (0, 0), special_flags=pygame.BLEND_MULT) 
 
 net_image = load_image("net_obstacle.png", BROWN, (90, 90))
 jellyfish_image = load_image("jelly_obstacle.png", PINK, (90, 90))
 background_image = load_image("Lvl1_water_background.png", WATER_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
 algebra_bg_image = load_image("algebra_background.png", (50, 50, 80), (WINDOW_WIDTH, WINDOW_HEIGHT), False)
 start_bg_image = load_image("Start_ocean_background.png", WATER_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
-taniwha_bg_image = load_image("Taniwha_background.png", TANIWHA_GREEN, (1089, 1081))  # New size
+taniwha_bg_image = load_image("Taniwha_background.png", TANIWHA_GREEN, TANIWHA_BG_SIZE)
 taniwha_head_bg_image = load_image("Taniwha_head_background.png", TANIWHA_GREEN, (300, 300))
-start_button_img = load_image("Start_button.png", BUTTON_COLOR, (705, 265))  # New size
-practice_button_img = load_image("Practice_Hub.png", PRACTICE_BUTTON_COLOR, (80, 80))
+start_button_img = load_image("Start_button.png", BUTTON_COLOR, START_BUTTON_SIZE)
+practice_button_img = load_image("Practice_Hub.png", PRACTICE_BUTTON_COLOR, PRACTICE_BUTTON_SIZE)
 portal_image = load_image("Water_portal.png", YELLOW, (120, 150))
 complete_bg_image = load_image("Complete_game_background.png", SEA_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
 game_over_bg_image = load_image("Game_over_background.png", (50, 0, 0), (WINDOW_WIDTH, WINDOW_HEIGHT), False)
 practice_hub_bg_image = load_image("Practice_hub_background.png", HUB_BACKGROUND, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
 
 # Load practice hub button images
-fractions_button_img = load_image("Fractions_practice_button.png", PRACTICE_BUTTON_COLOR, (662, 190))
-algebra_button_img = load_image("Algebra_practice_button.png", PRACTICE_BUTTON_COLOR, (662, 190))
-back_button_img = load_image("Backtomenu_button.png", PRACTICE_BUTTON_COLOR, (755, 177))
-next_button_img = load_image("next_button.png", PRACTICE_BUTTON_COLOR, (266, 126))
-previous_button_img = load_image("Previous_button.png", PRACTICE_BUTTON_COLOR, (340, 124))
-show_problems_img = load_image("Show_problems.png", PRACTICE_BUTTON_COLOR, (539, 124))
-show_theory_img = load_image("Show_theory.png", PRACTICE_BUTTON_COLOR, (539, 124))
-help_button_img = load_image("Help_button.png", DARK_NAVY, (120, 125))
+fractions_button_img = load_image("Fractions_practice_button.png", PRACTICE_BUTTON_COLOR, FRACTIONS_BTN_SIZE)
+algebra_button_img = load_image("Algebra_practice_button.png", PRACTICE_BUTTON_COLOR, ALGEBRA_BTN_SIZE)
+back_button_img = load_image("Backtomenu_button.png", PRACTICE_BUTTON_COLOR, BACK_BTN_SIZE)
+next_button_img = load_image("next_button.png", PRACTICE_BUTTON_COLOR, NAV_BTN_SIZE)
+previous_button_img = load_image("Previous_button.png", PRACTICE_BUTTON_COLOR, NAV_BTN_SIZE)
+show_problems_img = load_image("Show_problems.png", PRACTICE_BUTTON_COLOR, THEORY_BTN_SIZE)
+show_theory_img = load_image("Show_theory.png", PRACTICE_BUTTON_COLOR, THEORY_BTN_SIZE)
+help_button_img = load_image("Help_button.png", DARK_NAVY, HELP_BTN_SIZE)
 
 taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)) 
 taniwha_speed = 5 
@@ -140,7 +150,7 @@ show_help_popup = False
 help_popup_type = "fractions"  # or "algebra"
 
 # Help button
-help_button_rect = pygame.Rect(WINDOW_WIDTH - 140, 20, 120, 125)  # New size and position
+help_button_rect = pygame.Rect(WINDOW_WIDTH - 70, 20, HELP_BTN_SIZE[0], HELP_BTN_SIZE[1])
 
 # Practice input fields 
 practice_inputs = {} 
@@ -272,10 +282,19 @@ algebra_practice = [
 
 # Practice Hub buttons 
 practice_hub_buttons = [ 
-    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 331, WINDOW_HEIGHT//2 - 200, 662, 190), "text": "Fractions Practice", "target": "fractions_practice"}, 
-    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 331, WINDOW_HEIGHT//2 + 20, 662, 190), "text": "Algebra Practice", "target": "algebra_practice"}, 
-    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 377, WINDOW_HEIGHT//2 + 240, 755, 177), "text": "Back to Menu", "target": "menu"} 
-] 
+    {"rect": pygame.Rect(WINDOW_WIDTH//2 - FRACTIONS_BTN_SIZE[0]//2, 
+                       WINDOW_HEIGHT//2 - 120, 
+                       FRACTIONS_BTN_SIZE[0], FRACTIONS_BTN_SIZE[1]), 
+     "text": "Fractions Practice", "target": "fractions_practice"}, 
+    {"rect": pygame.Rect(WINDOW_WIDTH//2 - ALGEBRA_BTN_SIZE[0]//2, 
+                       WINDOW_HEIGHT//2, 
+                       ALGEBRA_BTN_SIZE[0], ALGEBRA_BTN_SIZE[1]), 
+     "text": "Algebra Practice", "target": "algebra_practice"}, 
+    {"rect": pygame.Rect(WINDOW_WIDTH//2 - BACK_BTN_SIZE[0]//2, 
+                       WINDOW_HEIGHT//2 + 120, 
+                       BACK_BTN_SIZE[0], BACK_BTN_SIZE[1]), 
+     "text": "Back to Menu", "target": "menu"} 
+]
 
 # Create animated water ring surface 
 water_ring_img = pygame.Surface((120, 120), pygame.SRCALPHA) 
@@ -453,17 +472,16 @@ def draw_menu():
     # Draw the ocean background
     screen.blit(start_bg_image, (0, 0))
     
-    # Draw the Taniwha background image centered but slightly behind the start button
-    taniwha_bg_rect = taniwha_bg_image.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 50))
+    # Draw the Taniwha background image centered
+    taniwha_bg_rect = taniwha_bg_image.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2))
     screen.blit(taniwha_bg_image, taniwha_bg_rect)
     
     # Draw title above the Taniwha
     title = title_font.render("Taniwha Tide", True, WHITE) 
     screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 100))) 
     
+    # Draw buttons (rest remains the same)
     mouse_pos = pygame.mouse.get_pos() 
-    
-    # Draw start button with image
     hover = start_button.collidepoint(mouse_pos)
     if start_button_img:
         screen.blit(start_button_img, start_button)
@@ -675,10 +693,10 @@ def draw_algebra_practice():
     draw_practice_navigation_buttons() 
 
 def draw_practice_navigation_buttons(): 
-    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 340, 124)  # Previous button
-    next_btn = pygame.Rect(WINDOW_WIDTH - 316, WINDOW_HEIGHT - 100, 266, 126)  # Next button
-    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 269, WINDOW_HEIGHT - 100, 539, 124)  # Back to menu button
-    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 269, WINDOW_HEIGHT - 180, 539, 124)  # Toggle button
+    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, NAV_BTN_SIZE[0], NAV_BTN_SIZE[1])
+    next_btn = pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 100, NAV_BTN_SIZE[0], NAV_BTN_SIZE[1])
+    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - THEORY_BTN_SIZE[0]//2, WINDOW_HEIGHT - 100, THEORY_BTN_SIZE[0], THEORY_BTN_SIZE[1])
+    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - THEORY_BTN_SIZE[0]//2, WINDOW_HEIGHT - 180, THEORY_BTN_SIZE[0], THEORY_BTN_SIZE[1])
     mouse_pos = pygame.mouse.get_pos() 
 
     # Back button (previous section) 
