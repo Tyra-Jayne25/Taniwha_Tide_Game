@@ -44,7 +44,7 @@ ALGEBRA_BTN_SIZE = (400, 100)
 BACK_BTN_SIZE = (400, 100)
 NAV_BTN_SIZE = (150, 60)  # Next/previous buttons
 THEORY_BTN_SIZE = (300, 60)  # Show theory/problems buttons
-HELP_BTN_SIZE = (100, 50)  # Help button
+HELP_BTN_SIZE = (70, 50)  # Help button
 TANIWHA_BG_SIZE = (600, 600)
 
 # Create game window 
