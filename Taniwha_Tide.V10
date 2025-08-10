@@ -57,7 +57,7 @@ practice_font = pygame.font.SysFont("Arial", 20)
 small_font = pygame.font.SysFont("Arial", 14)
 
 # Game objects 
-start_button = pygame.Rect(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT//2 + 50, 300, 80)  # Larger start button
+start_button = pygame.Rect(WINDOW_WIDTH//2 - 352, WINDOW_HEIGHT//2 + 50, 705, 265)  # New start button size
 practice_button = pygame.Rect(20, 20, 80, 80)  # Moved to top-left corner
 
 # Helper function to load images with fallback
@@ -91,9 +91,9 @@ jellyfish_image = load_image("jelly_obstacle.png", PINK, (90, 90))
 background_image = load_image("Lvl1_water_background.png", WATER_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
 algebra_bg_image = load_image("algebra_background.png", (50, 50, 80), (WINDOW_WIDTH, WINDOW_HEIGHT), False)
 start_bg_image = load_image("Start_ocean_background.png", WATER_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
-taniwha_bg_image = load_image("Taniwha_background.png", TANIWHA_GREEN, (400, 400))  # Larger size
+taniwha_bg_image = load_image("Taniwha_background.png", TANIWHA_GREEN, (1089, 1081))  # New size
 taniwha_head_bg_image = load_image("Taniwha_head_background.png", TANIWHA_GREEN, (300, 300))
-start_button_img = load_image("Start_button.png", BUTTON_COLOR, (300, 200))  # Larger size
+start_button_img = load_image("Start_button.png", BUTTON_COLOR, (705, 265))  # New size
 practice_button_img = load_image("Practice_Hub.png", PRACTICE_BUTTON_COLOR, (80, 80))
 portal_image = load_image("Water_portal.png", YELLOW, (120, 150))
 complete_bg_image = load_image("Complete_game_background.png", SEA_BLUE, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
@@ -101,14 +101,14 @@ game_over_bg_image = load_image("Game_over_background.png", (50, 0, 0), (WINDOW_
 practice_hub_bg_image = load_image("Practice_hub_background.png", HUB_BACKGROUND, (WINDOW_WIDTH, WINDOW_HEIGHT), False)
 
 # Load practice hub button images
-fractions_button_img = load_image("Fractions_practice_button.png", PRACTICE_BUTTON_COLOR, (400, 80))
-algebra_button_img = load_image("Algebra_practice_button.png", PRACTICE_BUTTON_COLOR, (400, 80))
-back_button_img = load_image("Backtomenu_button.png", PRACTICE_BUTTON_COLOR, (400, 100))
-next_button_img = load_image("next_button.png", PRACTICE_BUTTON_COLOR, (150, 60))
-previous_button_img = load_image("Previous_button.png", PRACTICE_BUTTON_COLOR, (150, 60))
-show_problems_img = load_image("Show_problems.png", PRACTICE_BUTTON_COLOR, (200, 60))
-show_theory_img = load_image("Show_theory.png", PRACTICE_BUTTON_COLOR, (200, 60))
-help_button_img = load_image("Help_button.png", DARK_NAVY, (50, 50))
+fractions_button_img = load_image("Fractions_practice_button.png", PRACTICE_BUTTON_COLOR, (662, 190))
+algebra_button_img = load_image("Algebra_practice_button.png", PRACTICE_BUTTON_COLOR, (662, 190))
+back_button_img = load_image("Backtomenu_button.png", PRACTICE_BUTTON_COLOR, (755, 177))
+next_button_img = load_image("next_button.png", PRACTICE_BUTTON_COLOR, (266, 126))
+previous_button_img = load_image("Previous_button.png", PRACTICE_BUTTON_COLOR, (340, 124))
+show_problems_img = load_image("Show_problems.png", PRACTICE_BUTTON_COLOR, (539, 124))
+show_theory_img = load_image("Show_theory.png", PRACTICE_BUTTON_COLOR, (539, 124))
+help_button_img = load_image("Help_button.png", DARK_NAVY, (120, 125))
 
 taniwha_rect = taniwha_img.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 150)) 
 taniwha_speed = 5 
@@ -140,7 +140,7 @@ show_help_popup = False
 help_popup_type = "fractions"  # or "algebra"
 
 # Help button
-help_button_rect = pygame.Rect(WINDOW_WIDTH - 40, 10, 30, 30)
+help_button_rect = pygame.Rect(WINDOW_WIDTH - 140, 20, 120, 125)  # New size and position
 
 # Practice input fields 
 practice_inputs = {} 
@@ -272,9 +272,9 @@ algebra_practice = [
 
 # Practice Hub buttons 
 practice_hub_buttons = [ 
-    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 - 60, 400, 60), "text": "Fractions Practice", "target": "fractions_practice"}, 
-    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 + 20, 400, 60), "text": "Algebra Practice", "target": "algebra_practice"}, 
-    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 + 100, 400, 60), "text": "Back to Menu", "target": "menu"} 
+    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 331, WINDOW_HEIGHT//2 - 200, 662, 190), "text": "Fractions Practice", "target": "fractions_practice"}, 
+    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 331, WINDOW_HEIGHT//2 + 20, 662, 190), "text": "Algebra Practice", "target": "algebra_practice"}, 
+    {"rect": pygame.Rect(WINDOW_WIDTH//2 - 377, WINDOW_HEIGHT//2 + 240, 755, 177), "text": "Back to Menu", "target": "menu"} 
 ] 
 
 # Create animated water ring surface 
@@ -453,62 +453,64 @@ def draw_menu():
     # Draw the ocean background
     screen.blit(start_bg_image, (0, 0))
     
-    # Draw the larger Taniwha background image centered
-    taniwha_bg_pos = (WINDOW_WIDTH//2 - 200, WINDOW_HEIGHT//2 - 150)
-    screen.blit(taniwha_bg_image, taniwha_bg_pos)
+    # Draw the Taniwha background image centered but slightly behind the start button
+    taniwha_bg_rect = taniwha_bg_image.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 50))
+    screen.blit(taniwha_bg_image, taniwha_bg_rect)
     
-    # Draw the Taniwha head wrapping around the start button
-    head_pos = (WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT//2 - 50)
-    screen.blit(taniwha_head_bg_image, head_pos)
-    
-    # Draw title on top of Taniwha
+    # Draw title above the Taniwha
     title = title_font.render("Taniwha Tide", True, WHITE) 
-    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 200))) 
+    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 100))) 
     
     mouse_pos = pygame.mouse.get_pos() 
     
     # Draw start button with image
     hover = start_button.collidepoint(mouse_pos)
-    if hover:
-        # Slightly enlarge button when hovered
-        hover_img = pygame.transform.scale(start_button_img, (310, 85))
-        screen.blit(hover_img, (start_button.x-5, start_button.y-3))
-    else:
+    if start_button_img:
         screen.blit(start_button_img, start_button)
+    else:
+        color = BUTTON_HOVER if hover else BUTTON_COLOR
+        pygame.draw.rect(screen, color, start_button)
+        pygame.draw.rect(screen, WHITE, start_button, 2)
+        start_text = button_font.render("START", True, WHITE)
+        screen.blit(start_text, (start_button.centerx - start_text.get_width()//2, 
+                               start_button.centery - start_text.get_height()//2))
     
     # Draw practice button with image
     hover = practice_button.collidepoint(mouse_pos)
-    if hover:
-        # Slightly enlarge button when hovered
-        hover_img = pygame.transform.scale(practice_button_img, (85, 85))
-        screen.blit(hover_img, (practice_button.x-3, practice_button.y-3))
-    else:
+    if practice_button_img:
         screen.blit(practice_button_img, practice_button)
+    else:
+        color = BUTTON_HOVER if hover else BUTTON_COLOR
+        pygame.draw.rect(screen, color, practice_button)
+        pygame.draw.rect(screen, WHITE, practice_button, 2)
+        practice_text = button_font.render("P", True, WHITE)
+        screen.blit(practice_text, (practice_button.centerx - practice_text.get_width()//2, 
+                                   practice_button.centery - practice_text.get_height()//2))
 
 def draw_practice_hub(): 
     # Draw the practice hub background
     screen.blit(practice_hub_bg_image, (0, 0))
     
     title = title_font.render("Practice Hub", True, WHITE) 
-    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 150))) 
+    screen.blit(title, title.get_rect(center=(WINDOW_WIDTH//2, 100))) 
     mouse_pos = pygame.mouse.get_pos() 
     
     # Draw practice buttons with images
     for button in practice_hub_buttons: 
         hover = button["rect"].collidepoint(mouse_pos)
-        if button["text"] == "Fractions Practice":
-            img = fractions_button_img
-        elif button["text"] == "Algebra Practice":
-            img = algebra_button_img
-        else:  # Back to Menu
-            img = back_button_img
-            
-        if hover:
-            # Slightly enlarge button when hovered
-            hover_img = pygame.transform.scale(img, (button["rect"].width+10, button["rect"].height+5))
-            screen.blit(hover_img, (button["rect"].x-5, button["rect"].y-3))
+        if button["text"] == "Fractions Practice" and fractions_button_img:
+            screen.blit(fractions_button_img, button["rect"])
+        elif button["text"] == "Algebra Practice" and algebra_button_img:
+            screen.blit(algebra_button_img, button["rect"])
+        elif button["text"] == "Back to Menu" and back_button_img:
+            screen.blit(back_button_img, button["rect"])
         else:
-            screen.blit(img, button["rect"])
+            color = PRACTICE_BUTTON_HOVER if hover else PRACTICE_BUTTON_COLOR
+            pygame.draw.rect(screen, color, button["rect"])
+            pygame.draw.rect(screen, WHITE, button["rect"], 2)
+            text = button_font.render(button["text"], True, WHITE)
+            screen.blit(text, (button["rect"].centerx - text.get_width()//2, 
+                               button["rect"].centery - text.get_height()//2))
 
 def draw_fractions_practice(): 
     global show_theory, practice_inputs, practice_feedback, practice_answers_shown, practice_question_index, feedback_display_time 
@@ -673,10 +675,10 @@ def draw_algebra_practice():
     draw_practice_navigation_buttons() 
 
 def draw_practice_navigation_buttons(): 
-    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 150, 60) 
-    next_btn = pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 100, 150, 60) 
-    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 100, 200, 60) 
-    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 180, 200, 60) 
+    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 340, 124)  # Previous button
+    next_btn = pygame.Rect(WINDOW_WIDTH - 316, WINDOW_HEIGHT - 100, 266, 126)  # Next button
+    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 269, WINDOW_HEIGHT - 100, 539, 124)  # Back to menu button
+    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 269, WINDOW_HEIGHT - 180, 539, 124)  # Toggle button
     mouse_pos = pygame.mouse.get_pos() 
 
     # Back button (previous section) 
@@ -770,7 +772,7 @@ def draw_level_complete():
     if current_level == 2:
         game_complete = True
         complete = title_font.render("GAME COMPLETE!", True, YELLOW)
-        screen.blit(complete, complete.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 100)))
+        screen.blit(complete, complete.get_rect(center=(WINDOW_WIDTH//2, WINDOW_HEIGHT//2 - 150)))
         congrats = button_font.render("Congratulations! You finished the game!", True, WHITE)
         screen.blit(congrats, (WINDOW_WIDTH//2 - congrats.get_width()//2, WINDOW_HEIGHT//2 - 30))
     else:
@@ -866,12 +868,7 @@ def draw_help_button():
     hover = help_button_rect.collidepoint(mouse_pos)
     
     if help_button_img:
-        if hover:
-            # Slightly enlarge button when hovered
-            hover_img = pygame.transform.scale(help_button_img, (35, 35))
-            screen.blit(hover_img, (help_button_rect.x-3, help_button_rect.y-3))
-        else:
-            screen.blit(help_button_img, help_button_rect)
+        screen.blit(help_button_img, help_button_rect)
     else:
         color = (0, 0, 150) if hover else DARK_NAVY
         pygame.draw.rect(screen, color, help_button_rect)
@@ -1239,10 +1236,10 @@ def main():
                 elif current_scene in ["fractions_practice", "algebra_practice"]: 
                     mouse_pos = pygame.mouse.get_pos() 
                     # Check navigation buttons first 
-                    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 150, 60) 
-                    next_btn = pygame.Rect(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 100, 150, 60) 
-                    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 100, 200, 60) 
-                    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT - 180, 200, 60) 
+                    back_btn = pygame.Rect(50, WINDOW_HEIGHT - 100, 340, 124)  # Previous button
+                    next_btn = pygame.Rect(WINDOW_WIDTH - 316, WINDOW_HEIGHT - 100, 266, 126)  # Next button
+                    menu_btn = pygame.Rect(WINDOW_WIDTH//2 - 269, WINDOW_HEIGHT - 100, 539, 124)  # Back to menu button
+                    toggle_btn = pygame.Rect(WINDOW_WIDTH//2 - 269, WINDOW_HEIGHT - 180, 539, 124)  # Toggle button
                     if back_btn.collidepoint(mouse_pos): 
                         practice_question_index = max(0, practice_question_index - 1) 
                         practice_inputs = {} 
@@ -1269,6 +1266,8 @@ def main():
                         current = current[practice_question_index] 
                         y_pos = 100 
                         for i in range(len(current["practice"])): 
+                            if y_pos > WINDOW_HEIGHT - 160: 
+                                break 
                             input_rect = pygame.Rect(550, y_pos, 150, 30) 
                             check_btn = pygame.Rect(720, y_pos, 80, 30) 
                             if input_rect.collidepoint(mouse_pos): 
